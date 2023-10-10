@@ -22,7 +22,8 @@ namespace FIT5032_PortfolioV3.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("name=FIT5032_Model")
+        //: base("DefaultConnection", throwIfV1Schema: false)
         {
         }
 

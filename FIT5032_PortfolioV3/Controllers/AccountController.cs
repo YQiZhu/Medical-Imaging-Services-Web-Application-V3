@@ -57,6 +57,7 @@ namespace FIT5032_PortfolioV3.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -370,9 +371,15 @@ namespace FIT5032_PortfolioV3.Controllers
                 }
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user);
+                //var userId = User.Identity.GetUserId();
+                //if (!User.Identity.IsAuthenticated)
+                //{
+                //    UserManager.AddToRole(userId, "Patient");
+                //}
                 if (result.Succeeded)
                 {
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                    UserManager.AddToRole(user.Id, "Patient");
                     if (result.Succeeded)
                     {
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);

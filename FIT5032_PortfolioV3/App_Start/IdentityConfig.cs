@@ -11,15 +11,24 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using FIT5032_PortfolioV3.Models;
+using SendGrid.Helpers.Mail;
+using SendGrid;
 
 namespace FIT5032_PortfolioV3
 {
     public class EmailService : IIdentityMessageService
     {
-        public Task SendAsync(IdentityMessage message)
+        private const String API_KEY = "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";
+
+        public async Task SendAsync(IdentityMessage message)
         {
-            // Plug in your email service here to send an email.
-            return Task.FromResult(0);
+            var client = new SendGridClient(API_KEY);
+            var from = new EmailAddress("zhuyanqi001215@gmail.com", "FIT5032 Example Email User");
+            var to = new EmailAddress(message.Destination, message.Destination);
+            var plainTextContent = message.Body;
+            var htmlContent = "<p>" + message.Body + "</p>";
+            var msg = MailHelper.CreateSingleEmail(from, to, message.Subject, plainTextContent, htmlContent);
+            var response = await client.SendEmailAsync(msg);
         }
     }
 

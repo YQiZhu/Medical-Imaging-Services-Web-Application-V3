@@ -6,7 +6,14 @@
 }
 
 <h2>Details</h2>
-
+<div id='map' style='height: 300px;'></div>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoieWFucWl6aHUiLCJhIjoiY2xuaGI1d2QyMGV0ajJybzc4ZHYwNDkyeSJ9.3f5 - bGGgFdiYgK5HaojEtw'
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v10'
+    });
+</script>
 <div>
     <h4>Clinics</h4>
     <hr />
@@ -43,8 +50,35 @@
             @Html.DisplayFor(model => model.Postcode)
         </dd>
 
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dl class="coordinates">
+            <dd class="description">
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+        
+        <dt>
+            @Html.DisplayNameFor(model => model.Latitude)
+        </dt>
+        
+            <dd class="latitude">
+                @Html.DisplayFor(model => model.Latitude)
+            </dd>
+        
+        <dt>
+            @Html.DisplayNameFor(model => model.Longitude)
+        </dt>
+        
+            <dd class="longitude">
+                @Html.DisplayFor(model => model.Longitude)
+            </dd>
+        </dl>
     </dl>
 </div>
+@section Scripts {
+    @Scripts.Render("~/bundles/mapbox")
+}
 @if (User.IsInRole("Patient"))
 {
     <p>
@@ -64,3 +98,4 @@
         @Html.ActionLink("Back to List", "Index")
     </p>
 }
+

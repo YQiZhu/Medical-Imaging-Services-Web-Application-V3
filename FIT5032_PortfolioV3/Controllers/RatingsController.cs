@@ -43,7 +43,7 @@ namespace FIT5032_PortfolioV3.Controllers
         // GET: Ratings/Create
         public ActionResult Create()
         {
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description");
+            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime");
             return View();
         }
 
@@ -52,9 +52,10 @@ namespace FIT5032_PortfolioV3.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Patient")]
         public ActionResult Create([Bind(Include = "Id,Description,Date,Time,AppointmentId")] Rating rating)
         {
-            rating.Id = User.Identity.GetUserId();
+            rating.Id = Guid.NewGuid().ToString(); ;
             ModelState.Clear();
             TryValidateModel(rating);
             if (ModelState.IsValid)
@@ -89,6 +90,7 @@ namespace FIT5032_PortfolioV3.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Patient")]
         public ActionResult Edit([Bind(Include = "Id,Description,Date,Time,AppointmentId")] Rating rating)
         {
             if (ModelState.IsValid)
@@ -119,6 +121,7 @@ namespace FIT5032_PortfolioV3.Controllers
         // POST: Ratings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Patient")]
         public ActionResult DeleteConfirmed(string id)
         {
             Rating rating = db.Ratings.Find(id);

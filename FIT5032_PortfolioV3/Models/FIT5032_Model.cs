@@ -30,13 +30,13 @@ namespace FIT5032_PortfolioV3.Models
 
             modelBuilder.Entity<AspNetUsers>()
                 .HasMany(e => e.Appointments)
-                .WithRequired(e => e.AspNetUsers)
+                .WithRequired(e => e.PatientId)
                 .HasForeignKey(e => e.PatientUserId)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<AspNetUsers>()
                 .HasMany(e => e.Appointments1)
-                .WithRequired(e => e.AspNetUsers1)
+                .WithRequired(e => e.StaffId)
                 .HasForeignKey(e => e.StaffUserId)
                 .WillCascadeOnDelete(false);
 
@@ -50,6 +50,14 @@ namespace FIT5032_PortfolioV3.Models
                 .WithRequired(e => e.Clinics)
                 .HasForeignKey(e => e.ClinicId)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Clinics>()
+                .Property(e => e.Latitude)
+                .HasPrecision(10, 8);
+
+            modelBuilder.Entity<Clinics>()
+                .Property(e => e.Longitude)
+                .HasPrecision(11, 8);
         }
     }
 }

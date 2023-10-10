@@ -22,6 +22,15 @@ namespace FIT5032_PortfolioV3.Models
         [StringLength(256)]
         public string Email { get; set; }
 
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string FullName
+        {
+            get { return FirstName + " " + LastName; }
+        }
+
         public bool EmailConfirmed { get; set; }
 
         [DataType(DataType.Date)]

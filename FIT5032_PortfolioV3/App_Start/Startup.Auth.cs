@@ -6,6 +6,7 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
 using FIT5032_PortfolioV3.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace FIT5032_PortfolioV3
 {
@@ -58,11 +59,11 @@ namespace FIT5032_PortfolioV3
             //   appId: "",
             //   appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "526205123307-m8fou098icsou3bmi4teqr5j19ch9me0.apps.googleusercontent.com",
+                ClientSecret = "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"
+            });
         }
     }
 }

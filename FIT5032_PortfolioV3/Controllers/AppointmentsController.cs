@@ -5,8 +5,11 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using FIT5032_PortfolioV3.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace FIT5032_PortfolioV3.Controllers
 {
@@ -17,8 +20,29 @@ namespace FIT5032_PortfolioV3.Controllers
         // GET: Appointments
         public ActionResult Index()
         {
-            var appointments = db.Appointments.Include(a => a.AspNetUsers).Include(a => a.AspNetUsers1).Include(a => a.Clinics);
-            return View(appointments.ToList());
+            var userId = User.Identity.GetUserId();
+
+            if (User.IsInRole("Staff"))
+            {
+                // Display appointments entered by the logged-in staff user
+                var appointments = db.Appointments.Where(a => a.StaffId.Id == userId).Include(a => a.PatientId).Include(a => a.Clinics);
+                return View(appointments.ToList());
+            }
+            else if (User.IsInRole("Patient"))
+            {
+                // Display appointments entered by the logged-in patient user
+                var appointments = db.Appointments.Where(a => a.PatientId.Id == userId).Include(a => a.StaffId).Include(a => a.Clinics);
+                return View(appointments.ToList());
+            }
+            else if (User.IsInRole("Admin"))
+            {
+                // Display all appointments for admins
+                var appointments = db.Appointments.Include(a => a.StaffId).Include(a => a.PatientId).Include(a => a.Clinics);
+                return View(appointments.ToList());
+            }
+
+            // If the user doesn't have any of the specified roles, return an empty view
+            return View();
         }
 
         // GET: Appointments/Details/5
@@ -39,9 +63,31 @@ namespace FIT5032_PortfolioV3.Controllers
         // GET: Appointments/Create
         public ActionResult Create()
         {
-            ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "Email");
-            ViewBag.StaffUserId = new SelectList(db.AspNetUsers, "Id", "Email");
-            ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name");
+            var userId = User.Identity.GetUserId();
+            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
+
+            // Find the "Staff" role
+            var staffRole = roleManager.FindByName("Staff");
+
+            // Get the user IDs in the "Staff" role
+            var staffUserIds = staffRole.Users.Select(r => r.UserId).ToList();
+
+            if (User.IsInRole("Patient"))
+            {
+                ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName");
+                // Display only users with the "Staff" role and their names
+                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
+                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name");
+            }
+            else
+            {
+                ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "FullName");
+                // Display only users with the "Staff" role and their names
+                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
+                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name");
+            }
+            
             return View();
         }
 
@@ -50,18 +96,22 @@ namespace FIT5032_PortfolioV3.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Patient")]
         public ActionResult Create([Bind(Include = "Id,Description,RoomNo,Date,Time,ClinicId,PatientUserId,StaffUserId")] Appointments appointments)
         {
+            appointments.Id = Guid.NewGuid().ToString();
+            ModelState.Clear();
+            TryValidateModel(appointments);
             if (ModelState.IsValid)
             {
                 db.Appointments.Add(appointments);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
             ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "Email", appointments.PatientUserId);
             ViewBag.StaffUserId = new SelectList(db.AspNetUsers, "Id", "Email", appointments.StaffUserId);
             ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+
             return View(appointments);
         }
 
@@ -77,9 +127,30 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "Email", appointments.PatientUserId);
-            ViewBag.StaffUserId = new SelectList(db.AspNetUsers, "Id", "Email", appointments.StaffUserId);
-            ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+
+            var userId = User.Identity.GetUserId();
+            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
+
+            // Find the "Staff" role
+            var staffRole = roleManager.FindByName("Staff");
+
+            // Get the user IDs in the "Staff" role
+            var staffUserIds = staffRole.Users.Select(r => r.UserId).ToList();
+            if (User.IsInRole("Patient"))
+            {
+                ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName");
+                // Display only users with the "Staff" role and their names
+                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
+                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name");
+            }
+            else
+            {
+                ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "FullName");
+                // Display only users with the "Staff" role and their names
+                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
+                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name");
+            }
             return View(appointments);
         }
 
@@ -88,6 +159,7 @@ namespace FIT5032_PortfolioV3.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Patient")]
         public ActionResult Edit([Bind(Include = "Id,Description,RoomNo,Date,Time,ClinicId,PatientUserId,StaffUserId")] Appointments appointments)
         {
             if (ModelState.IsValid)
@@ -103,6 +175,7 @@ namespace FIT5032_PortfolioV3.Controllers
         }
 
         // GET: Appointments/Delete/5
+        [Authorize(Roles = "Admin,Patient")]
         public ActionResult Delete(string id)
         {
             if (id == null)
@@ -120,6 +193,7 @@ namespace FIT5032_PortfolioV3.Controllers
         // POST: Appointments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Patient")]
         public ActionResult DeleteConfirmed(string id)
         {
             Appointments appointments = db.Appointments.Find(id);

@@ -42,7 +42,7 @@ namespace FIT5032_PortfolioV3.Controllers
         // GET: Reports/Create
         public ActionResult Create()
         {
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description");
+            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime");
             return View();
         }
 
@@ -54,7 +54,7 @@ namespace FIT5032_PortfolioV3.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Description,Date,Time,AppointmentId")] Report report)
         {
-            report.Id = User.Identity.GetUserId();
+            report.Id = Guid.NewGuid().ToString(); ;
             ModelState.Clear();
             TryValidateModel(report);
             if (ModelState.IsValid)
