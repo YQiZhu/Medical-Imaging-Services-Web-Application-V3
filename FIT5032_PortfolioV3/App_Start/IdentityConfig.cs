@@ -28,6 +28,15 @@ namespace FIT5032_PortfolioV3
             var plainTextContent = message.Body;
             var htmlContent = "<p>" + message.Body + "</p>";
             var msg = MailHelper.CreateSingleEmail(from, to, message.Subject, plainTextContent, htmlContent);
+            
+            // Add attachment to the email
+            //if (!string.IsNullOrEmpty(message.AttachmentPath)) // Replace "AttachmentPath" with the actual property name in your IdentityMessage model
+            //{
+            //    var attachment = new Attachment();
+            //    attachment.Filename = "AttachmentFileName.pdf"; // Specify the attachment file name
+            //    attachment.Content = Convert.ToBase64String(System.IO.File.ReadAllBytes(message.AttachmentPath));
+            //    msg.AddAttachment(attachment);
+            //}
             var response = await client.SendEmailAsync(msg);
         }
     }

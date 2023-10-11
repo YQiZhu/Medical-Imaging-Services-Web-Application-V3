@@ -18,6 +18,12 @@ namespace FIT5032_PortfolioV3
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
+            routes.MapRoute(
+                name: "SendEmail",
+                url: "MedImages/SendEmail/{id}",
+                defaults: new { controller = "MedImages", action = "SendEmail", id = UrlParameter.Optional }
+            );
+
         }
     }
 }

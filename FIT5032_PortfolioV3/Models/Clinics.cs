@@ -20,9 +20,11 @@ namespace FIT5032_PortfolioV3.Models
         public string Name { get; set; }
 
         [Required]
+        [Display(Name = "Phone No")]
         public string PhoneNo { get; set; }
 
         [Required]
+        [Display(Name = "Address")]
         public string AddressDetail { get; set; }
 
         [Required]

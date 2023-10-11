@@ -12,11 +12,17 @@ namespace FIT5032_PortfolioV3.Models
     {
 
         [Required]
+        [Display(Name = "Appointment Id")]
         public String Id
         {
             get;
             set;
         }
+
+        [Required]
+        [Display(Name = "X-ray Image")]
+        [StringLength(50)]
+        public string Path { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
@@ -35,6 +41,7 @@ namespace FIT5032_PortfolioV3.Models
         }
 
         [Required]
+        [Display(Name = "Appointment Id")]
         public String AppointmentId
         {
             get;

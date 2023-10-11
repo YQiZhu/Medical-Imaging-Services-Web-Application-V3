@@ -225,6 +225,14 @@
     <Compile Include="Migrations\202310101343359_updateAppointmentModel.designer.cs">
       <DependentUpon>202310101343359_updateAppointmentModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202310110557479_updateImgModel.cs" />
+    <Compile Include="Migrations\202310110557479_updateImgModel.designer.cs">
+      <DependentUpon>202310110557479_updateImgModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310111044554_updateSendEmailModel.cs" />
+    <Compile Include="Migrations\202310111044554_updateSendEmailModel.designer.cs">
+      <DependentUpon>202310111044554_updateSendEmailModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Appointments.cs" />
     <Compile Include="Models\AspNetRoles.cs" />
     <Compile Include="Models\AspNetUserLogins.cs" />
@@ -803,7 +811,7 @@
     <Content Include="Views\Reports\Details.cshtml" />
     <Content Include="Views\Reports\Edit.cshtml" />
     <Content Include="Views\Reports\Index.cshtml" />
-    <Content Include="Views\Home\Send_Email.cshtml" />
+    <Content Include="Views\MedImages\SendEmail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202310070746562_InitialModel.resx">
@@ -854,6 +862,12 @@
     <EmbeddedResource Include="Migrations\202310101343359_updateAppointmentModel.resx">
       <DependentUpon>202310101343359_updateAppointmentModel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310110557479_updateImgModel.resx">
+      <DependentUpon>202310110557479_updateImgModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310111044554_updateSendEmailModel.resx">
+      <DependentUpon>202310111044554_updateSendEmailModel.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -884,6 +898,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Uploads\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

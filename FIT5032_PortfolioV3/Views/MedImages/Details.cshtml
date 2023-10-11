@@ -12,6 +12,12 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
+            @Html.DisplayNameFor(model => model.Path)
+        </dt>
+        <dd>
+            <img class="img-thumbnail" src="@Url.Content("~/Uploads/"+ Model.Path)" />
+        </dd>
+        <dt>
             @Html.DisplayNameFor(model => model.Appointment.Description)
         </dt>
 
@@ -40,6 +46,9 @@
 @if (User.IsInRole("Admin"))
 {
     <p>
+        <a href="@Url.Action("SendEmail", "MedImages", new { id = Model.Id })" class="btn btn-primary">Send X-ray Image to Email</a>
+    </p>
+    <p>
         @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
         @Html.ActionLink("Back to List", "Index")
     </p>
@@ -47,12 +56,18 @@
 @if (User.IsInRole("Staff"))
 {
     <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
         @Html.ActionLink("Back to List", "Index")
     </p>
 }
 @if (User.IsInRole("Patient"))
 {
     <p>
+        <a href="@Url.Action("SendEmail", "MedImages", new { id = Model.Id })" class="btn btn-primary">Send X-ray Image to Email</a>
+    </p>
+    <p>
         @Html.ActionLink("Back to List", "Index")
     </p>
+
 }
+

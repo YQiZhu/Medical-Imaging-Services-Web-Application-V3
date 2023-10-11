@@ -19,5 +19,8 @@ namespace FIT5032_PortfolioV3.Models
         [Required(ErrorMessage = "Please enter the contents")]
         public string Contents { get; set; }
 
+        [Display(Name = "Email Attachment")]
+        [StringLength(50)]
+        public string AttachmentPath { get; set; }
     }
 }

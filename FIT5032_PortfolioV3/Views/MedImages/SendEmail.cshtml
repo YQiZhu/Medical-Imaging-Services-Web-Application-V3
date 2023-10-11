@@ -1,0 +1,64 @@
+﻿@model FIT5032_PortfolioV3.Models.SendEmailViewModel
+
+@{
+    ViewBag.Title = "Send Email";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Send Email</h2>
+
+@using (Html.BeginForm("SendEmail", "MedImages", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    if (@ViewBag.Result != null)
+    {
+        <div class="alert alert-info">@ViewBag.Result</div>
+    }
+<div class="form-group">
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ToEmail)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ToEmail)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Subject)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Subject)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Contents)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Contents)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AttachmentPath)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AttachmentPath)
+            <p></p>
+            <img class="img-thumbnail" src="@Url.Content("~/Uploads/"+Model.AttachmentPath)" style="max-width: 100px; max-height: 100px;" />
+        </dd>
+
+    </dl>
+</div>
+
+    <button type="submit" class="btn btn-primary">Send Email</button>
+    }
+
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
