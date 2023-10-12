@@ -25,8 +25,27 @@ namespace FIT5032_PortfolioV3.Controllers
         // GET: MedImages
         public ActionResult Index()
         {
-            var medImages = db.MedImages.Include(m => m.Appointment);
-            return View(medImages.ToList());
+            var userId = User.Identity.GetUserId();
+            if (User.IsInRole("Staff"))
+            {
+                // Display appointments entered by the logged-in staff user
+                var medImages = db.MedImages.Where(a => a.Appointment.StaffUserId == userId);
+                return View(medImages.ToList());
+            }
+            else if (User.IsInRole("Patient"))
+            {
+                // Display appointments entered by the logged-in patient user
+                var medImages = db.MedImages.Where(a => a.Appointment.PatientUserId == userId);
+                return View(medImages.ToList());
+            }
+            else if (User.IsInRole("Admin"))
+            {
+                // Display all appointments for admins
+                var medImages = db.MedImages.Include(m => m.Appointment);
+                return View(medImages.ToList());
+            }
+            //var medImages = db.MedImages.Include(m => m.Appointment);
+            return View();
         }
 
         // GET: MedImages/Details/5
@@ -61,8 +80,11 @@ namespace FIT5032_PortfolioV3.Controllers
         {
             medImage.Id = Guid.NewGuid().ToString(); ;
             ModelState.Clear();
-            var myUniqueFileName = string.Format(@"{0}", Guid.NewGuid());
-            medImage.Path = myUniqueFileName;
+            if (postedFile != null)
+            {
+                var myUniqueFileName = string.Format(@"{0}", Guid.NewGuid());
+                medImage.Path = myUniqueFileName;
+            }
             TryValidateModel(medImage);
             if (ModelState.IsValid)
             {
@@ -72,6 +94,7 @@ namespace FIT5032_PortfolioV3.Controllers
                 medImage.Path = filePath;
                 postedFile.SaveAs(serverPath + medImage.Path);
 
+                
                 db.MedImages.Add(medImage);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -93,7 +116,7 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", medImage.AppointmentId);
+            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime", medImage.AppointmentId);
             return View(medImage);
         }
 
@@ -111,7 +134,7 @@ namespace FIT5032_PortfolioV3.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", medImage.AppointmentId);
+            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime", medImage.AppointmentId);
             return View(medImage);
         }
 
@@ -219,7 +242,7 @@ namespace FIT5032_PortfolioV3.Controllers
             }
             TempData["Message"] = "Email sent Fail.";
             // If ModelState is not valid, redisplay the form with validation errors
-            return RedirectToAction("Index");
+            return View();
         }
 
         protected override void Dispose(bool disposing)

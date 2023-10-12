@@ -4,17 +4,24 @@
     ViewBag.Title = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://code.jquery.com/jquery-migrate-3.3.2.min.js"></script>
+<link rel='stylesheet' href="@Url.Content("~/Content/Site.css")" type='text/css' />
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 
 <h2>Create</h2>
+
 <script>
     $(document).ready(function () {
         $("#createDate").datepicker({
             minDate: 0, // Set minimum date to today
-            dateFormat: "dd/mm/yyyy" // Customize date format as needed
+            dateFormat: "dd/mm/yy" // Use "yy" for year in the date format
         });
     });
 </script>
-<link rel='stylesheet' href="@Url.Content("~/Content/Site.css")" type='text/css' />
+
 @using (Html.BeginForm("Create", "MedImages", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
@@ -27,6 +34,7 @@
             <label class="control-label col-md-2" for="Id">Select File</label>
             <div class="col-md-10">
                 <input type="file" name="postedFile" class="btn btn-default" accept="image/png,image/gif,image/jpeg" />
+                @Html.ValidationMessageFor(model => model.Path, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -50,7 +58,7 @@
             @Html.LabelFor(model => model.AppointmentId, "AppointmentId", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownList("AppointmentId", null, htmlAttributes: new { @class = "custom-dropdown form-control" })
-                @Html.ValidationMessageFor(model => model.AppointmentId, "", new { @class = "text-danger" })
+                @Html.ValidationMessageFor(model => model.AppointmentId, "", new { @class = "custom-dropdown text-danger" })
             </div>
         </div>
 

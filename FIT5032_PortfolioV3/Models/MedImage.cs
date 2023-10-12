@@ -19,7 +19,7 @@ namespace FIT5032_PortfolioV3.Models
             set;
         }
 
-        [Required]
+        [Required(ErrorMessage = "Please Upload Image")]
         [Display(Name = "X-ray Image")]
         [StringLength(50)]
         public string Path { get; set; }

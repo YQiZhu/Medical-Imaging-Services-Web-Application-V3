@@ -10,9 +10,14 @@
 {
     <div class="alert alert-success">@TempData["Message"]</div>
 }
+
+@if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+{
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+}
+
 <table class="table">
     <tr>
         <th>
