@@ -13,6 +13,7 @@ using SendGrid.Helpers.Mail;
 using SendGrid;
 using FIT5032_PortfolioV3.Utils;
 using System.Web.Helpers;
+using System.Web.UI.WebControls;
 
 namespace FIT5032_PortfolioV3.Controllers
 {
@@ -56,7 +57,7 @@ namespace FIT5032_PortfolioV3.Controllers
         [Authorize(Roles = "Admin,Staff")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Date,Time,AppointmentId")] MedImage medImage, HttpPostedFileBase inputFile)
+        public ActionResult Create([Bind(Include = "Id,Date,Time,AppointmentId")] MedImage medImage, HttpPostedFileBase postedFile)
         {
             medImage.Id = Guid.NewGuid().ToString(); ;
             ModelState.Clear();
@@ -66,17 +67,17 @@ namespace FIT5032_PortfolioV3.Controllers
             if (ModelState.IsValid)
             {
                 string serverPath = Server.MapPath("~/Uploads/");
-                string fileExtension = Path.GetExtension(inputFile.FileName);
+                string fileExtension = Path.GetExtension(postedFile.FileName);
                 string filePath = medImage.Path + fileExtension;
                 medImage.Path = filePath;
-                inputFile.SaveAs(serverPath + medImage.Path);
+                postedFile.SaveAs(serverPath + medImage.Path);
 
                 db.MedImages.Add(medImage);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime", medImage.AppointmentId);
+            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", medImage.AppointmentId);
             return View(medImage);
         }
 
@@ -92,7 +93,7 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime", medImage.AppointmentId);
+            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", medImage.AppointmentId);
             return View(medImage);
         }
 
@@ -102,20 +103,15 @@ namespace FIT5032_PortfolioV3.Controllers
         [Authorize(Roles = "Admin,Staff")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Date,Time,AppointmentId")] MedImage medImage, HttpPostedFileBase inputFile)
+        public ActionResult Edit([Bind(Include = "Id,Date,Time,AppointmentId")] MedImage medImage)
         {
             if (ModelState.IsValid)
             {
-                string serverPath = Server.MapPath("~/Uploads/");
-                string fileExtension = Path.GetExtension(inputFile.FileName);
-                string filePath = medImage.Path + fileExtension;
-                medImage.Path = filePath;
-                inputFile.SaveAs(serverPath + medImage.Path);
                 db.Entry(medImage).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime", medImage.AppointmentId);
+            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", medImage.AppointmentId);
             return View(medImage);
         }
 
@@ -175,6 +171,7 @@ namespace FIT5032_PortfolioV3.Controllers
         public ActionResult SendEmail(SendEmailViewModel model)
         {
             const String API_KEY = "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";
+            //string mes = model.ToEmail + model.Subject + model.Subject;
             if (ModelState.IsValid)
             {
                 try
@@ -182,7 +179,7 @@ namespace FIT5032_PortfolioV3.Controllers
                 var client = new SendGridClient(API_KEY);
                 var from = new EmailAddress("zhuyanqi001215@gmail.com", "FIT5032 Example Email User");
                 var to = new EmailAddress(model.ToEmail, model.ToEmail);
-                var plainTextContent = model.Contents+ model.AttachmentPath;
+                var plainTextContent = model.Contents;
                 var htmlContent = "<p>" + model.Contents + "</p>";
                 var msg = MailHelper.CreateSingleEmail(from, to, model.Subject, plainTextContent, htmlContent);
                 
@@ -192,27 +189,37 @@ namespace FIT5032_PortfolioV3.Controllers
                         string serverPath = Server.MapPath(path);
                         msg.AddAttachment(model.AttachmentPath, Convert.ToBase64String(System.IO.File.ReadAllBytes(serverPath)));
                     }
-                    var response = client.SendEmailAsync(msg);// Send the email
+                    var response = client.SendEmailAsync(msg).Result;// Send the email
                 if (response != null)
                 {
                     TempData["Message"] = "Email sent successfully.";
-                        //ViewBag.Result = "Email has been send.";
-                        //string path = "~/Uploads/" + model.AttachmentPath;
-                        //string serverPath = Server.MapPath(path);
-                        //ViewBag.Result = serverPath;
                         ModelState.Clear();
                         return RedirectToAction("Index");
-                } 
-                    return View();
+                    }
                 }
                 catch
                 {
                     return View();
                 }
             }
-
+            else
+            {
+                string mess = "";
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        // Log or print the error message to identify the specific issue
+                        mess=mess+error.ErrorMessage;
+                    }
+                }
+                TempData["Message"] = mess;
             // If ModelState is not valid, redisplay the form with validation errors
-            return View();
+            return RedirectToAction("Index");
+            }
+            TempData["Message"] = "Email sent Fail.";
+            // If ModelState is not valid, redisplay the form with validation errors
+            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)

@@ -14,52 +14,52 @@
         });
     });
 </script>
-
-@using (Html.BeginForm("Create", "MedImages", FormMethod.Post, new { enctype = "multipart/form-data"}))
+<link rel='stylesheet' href="@Url.Content("~/Content/Site.css")" type='text/css' />
+@using (Html.BeginForm("Create", "MedImages", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-@Html.AntiForgeryToken()
+    @Html.AntiForgeryToken()
 
-<div class="form-horizontal">
-    <h4>MedImage</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <div class="form-group">
-        <label class="control-label col-md-2" for="Id">Select File</label>
-        <div class="col-md-10">
-            <input type="file" name="inputFile" class="btn btn-default" accept="image/png,image/gif,image/jpeg"/>
+    <div class="form-horizontal">
+        <h4>MedImage</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <label class="control-label col-md-2" for="Id">Select File</label>
+            <div class="col-md-10">
+                <input type="file" name="postedFile" class="btn btn-default" accept="image/png,image/gif,image/jpeg" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control", @id = "createDate" } })
+                @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Time, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Time, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.AppointmentId, "AppointmentId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("AppointmentId", null, htmlAttributes: new { @class = "custom-dropdown form-control" })
+                @Html.ValidationMessageFor(model => model.AppointmentId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
         </div>
     </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control", @id = "createDate" } })
-            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Time, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Time, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.AppointmentId, "AppointmentId", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownList("AppointmentId", null, htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.AppointmentId, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Create" class="btn btn-default" />
-        </div>
-    </div>
-</div>
 }
 
 <div>
