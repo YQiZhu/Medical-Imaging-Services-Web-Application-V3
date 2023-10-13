@@ -6,7 +6,13 @@
 }
 <script src='https://api.mapbox.com/mapbox-gl-js/v0.47.0/mapbox-gl.js'></script>
 <link href='https://api.mapbox.com/mapbox-gl-js/v0.47.0/mapbox-gl.css' rel='stylesheet' />
-<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/jquery.dataTables.min.css" rel="stylesheet" />
+@*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+        <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet" />*@
+@*<link href="~/Content/DataTables/css/dataTables.jqueryui.min.css" rel="stylesheet" />*@
+@*<link href="~/Content/DataTables/css/dataTables.jqueryui.min.css" rel="stylesheet" />*@
 <h2>Index</h2>
 <div id='map' style='height: 300px;'></div>
 <script>
@@ -40,10 +46,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.Description)
             </th>
-            <th>
+            <th style="display:none;">
                 @Html.DisplayNameFor(model => model.Latitude)
             </th>
-            <th>
+            <th style="display:none;">
                 @Html.DisplayNameFor(model => model.Longitude)
             </th>
             <th></th>
@@ -53,7 +59,7 @@
         @foreach (var item in Model)
         {
             <tr class="coordinates">
-                <td>
+                <td class="description">
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
@@ -65,13 +71,13 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Postcode)
                 </td>
-                <td class="description">
+                <td>
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
-                <td class="latitude">
+                <td class="latitude" style="display:none;">
                     @Html.DisplayFor(modelItem => item.Latitude)
                 </td>
-                <td class="longitude">
+                <td class="longitude" style="display:none;">
                     @Html.DisplayFor(modelItem => item.Longitude)
                 </td>
                 @if (User.IsInRole("Admin"))
@@ -100,13 +106,13 @@
 </table>
 @section Scripts {
     @Scripts.Render("~/bundles/mapbox")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/Scripts/DataTables/jquery.dataTables.js")
-    @Scripts.Render("~/Scripts/DataTables/dataTables.bootstrap.js")
+
     <script>
         $(document).ready(function () {
             $('.table').DataTable();
         });
     </script>
 }
-<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css"
-      rel="stylesheet" />

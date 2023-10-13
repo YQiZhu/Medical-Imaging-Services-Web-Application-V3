@@ -57,20 +57,7 @@
                     }
                 </dd>
             *@
-            <dt>Set Your Name: </dt>
-            <dd>
-                @Html.LabelFor(m => m.FirstName, htmlAttributes: new { @class = "col-md-2 col-form-label" })
-                <div class="col-md-10">
-                    @Html.EditorFor(m => m.FirstName, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
-                </div>
-                @Html.LabelFor(m => m.LastName, htmlAttributes: new { @class = "col-md-2 col-form-label" })
-                <div class="col-md-10">
-                    @Html.EditorFor(m => m.LastName, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
-                </div>
-
-            </dd>
+            
             <dt>Two-Factor Authentication:</dt>
             <dd>
                 <p>

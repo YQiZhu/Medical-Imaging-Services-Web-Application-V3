@@ -5,31 +5,62 @@
 <main>
     <section class="row" aria-labelledby="aspnetTitle">
         <h1 id="title">X-rayImg Connect</h1>
-        <p class="lead">X-rayImg Connect allow user to Create/Detail/Edit of their Report/Rating/Medical Image base on different Roles</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
+        <p class="lead">Welcome to X-rayImg Connect, your one-stop platform for managing your medical appointments, viewing medical images, and accessing medical reports.</p>
     </section>
-    <img srcset="~/Content/images/4370123-600w.jpg 600w,
-             ~/Content/images/4370123-800w.jpg 800w"
-         sizes="(max-width: 600px) 600px, 800px"
-         src="~/Content/images/4370123-800w.jpg"
-         alt="Responsive Image" />
+
     <div class="row">
         <section class="col-md-4" aria-labelledby="gettingStartedTitle">
             <h2 id="gettingStartedTitle">Getting started</h2>
             <p>
-                Before intersect with any feature, Please Login/Register account first.
+                To get started, please create an account or log in.
             </p>
-
+            <p><a class="btn btn-outline-dark" href="/Account/Register">Register Now &raquo;</a>
+            <a class="btn btn-outline-dark" href="/Account/Login">Log in Now &raquo;</a></p>
         </section>
         <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+            <h2 id="librariesTitle">Book Your Appointment</h2>
+            <p>Schedule your medical appointment at your preferred clinic with ease. Our booking system simplifies the process for you.</p>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <p><a class="btn btn-outline-dark" href="/Appointments">Book an Appointment &raquo;</a></p>
+            }
+            else
+            {
+                <p>
+                    To get started, please create an account or log in.
+                </p>
+                <p>
+                    <a class="btn btn-outline-dark" href="/Account/Register">Register Now &raquo;</a>
+                    <a class="btn btn-outline-dark" href="/Account/Login">Log in Now &raquo;</a>
+                </p>
+            }
         </section>
         <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+            <h2 id="hostingTitle">View Medical Images & Reports</h2>
+            <p>Access your medical images and reports online. Our platform allows you to review and manage your medical records conveniently.</p>
+            <p>Additionally, you can access your medical reports for a detailed analysis of your health status.</p>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <p><a class="btn btn-outline-dark" href="/MedImages">View Medical Images &raquo;</a></p>
+                <p><a class="btn btn-outline-dark" href="/Reports">View Medical Reports &raquo;</a></p>
+            }
+            else
+            {
+                <p>
+                    To get started, please create an account or log in.
+                </p>
+                <p>
+                    <a class="btn btn-outline-dark" href="/Account/Register">Register Now &raquo;</a>
+                    <a class="btn btn-outline-dark" href="/Account/Login">Log in Now &raquo;</a>
+                </p>
+            }
+
         </section>
     </div>
+
+    <img srcset="~/Content/images/4370123-600w.jpg 600w,
+             ~/Content/images/4370123-800w.jpg 800w"
+     sizes="(max-width: 600px) 600px, 800px"
+     src="~/Content/images/4370123-800w.jpg"
+     alt="Responsive Image" />
 </main>

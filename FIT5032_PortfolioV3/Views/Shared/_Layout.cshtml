@@ -12,6 +12,7 @@
     @*This is used for the Geocoding Mapbox API*@
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js'></script>
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css' type='text/css' />
+    <link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
@@ -24,15 +25,14 @@
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Clinics", "Index", "Clinics", new { area = "" }, new { @class = "nav-link" })</li> 
+
                     @if (User.Identity.IsAuthenticated)
                     {
+                        <li>@Html.ActionLink("Clinics", "Index", "Clinics", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("Appointments", "Index", "Appointments", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("Medical Images", "Index", "MedImages", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("Reports", "Index", "Reports", new { area = "" }, new { @class = "nav-link" })</li>
-                        
+                        <li>@Html.ActionLink("Rate Your Appointment", "Index", "Ratings", new { area = "" }, new { @class = "nav-link" })</li>
                     }
 
 

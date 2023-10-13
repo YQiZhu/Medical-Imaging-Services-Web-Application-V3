@@ -9,7 +9,8 @@ namespace FIT5032_PortfolioV3.Models
     public partial class Appointments
     {
         public string Id { get; set; }
-
+       
+        [Display(Name = "Appointment Description")]
         public string Description { get; set; }
 
         [Display(Name = "Appointment room no")]

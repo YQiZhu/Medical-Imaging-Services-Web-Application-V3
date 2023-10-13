@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using FIT5032_PortfolioV3.Models;
+using System.Data.Entity;
 
 namespace FIT5032_PortfolioV3.Controllers
 {
@@ -17,6 +18,7 @@ namespace FIT5032_PortfolioV3.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private FIT5032_Model db = new FIT5032_Model();
 
         public AccountController()
         {
@@ -158,7 +160,12 @@ namespace FIT5032_PortfolioV3.Controllers
                 {
                     UserManager.AddToRole(user.Id, "Patient");
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+
+                    AspNetUsers aspUser = db.AspNetUsers.Find(user.Id);
+                    aspUser.FirstName = model.FirstName;
+                    aspUser.LastName = model.LastName;
+                    db.Entry(aspUser).State = EntityState.Modified;
+                    db.SaveChanges();
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);

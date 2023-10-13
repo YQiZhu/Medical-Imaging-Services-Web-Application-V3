@@ -79,6 +79,8 @@ namespace FIT5032_PortfolioV3.Controllers
         public ActionResult Create([Bind(Include = "Id,Date,Time,AppointmentId")] MedImage medImage, HttpPostedFileBase postedFile)
         {
             medImage.Id = Guid.NewGuid().ToString(); ;
+            medImage.Date = DateTime.Now.Date.ToString("yyyy-MM-dd");
+            medImage.Time = DateTime.Now.TimeOfDay.ToString("hh\\:mm");
             ModelState.Clear();
             if (postedFile != null)
             {
@@ -94,14 +96,27 @@ namespace FIT5032_PortfolioV3.Controllers
                 medImage.Path = filePath;
                 postedFile.SaveAs(serverPath + medImage.Path);
 
-                
+
                 db.MedImages.Add(medImage);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
+            else
+            {
+                string mess = "";
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        // Log or print the error message to identify the specific issue
+                        mess = mess + error.ErrorMessage;
+                    }
+                }
+                TempData["Message"] = mess;
 
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", medImage.AppointmentId);
-            return View(medImage);
+                ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime", medImage.AppointmentId);
+                return View(medImage);
+            }
         }
 
         // GET: MedImages/Edit/5

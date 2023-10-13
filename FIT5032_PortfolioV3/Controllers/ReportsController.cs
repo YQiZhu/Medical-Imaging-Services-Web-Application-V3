@@ -20,8 +20,27 @@ namespace FIT5032_PortfolioV3.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            var reports = db.Reports.Include(r => r.Appointment);
-            return View(reports.ToList());
+            var userId = User.Identity.GetUserId();
+            if (User.IsInRole("Staff"))
+            {
+                // Display appointments entered by the logged-in staff user
+                var reports = db.Reports.Where(a => a.Appointment.StaffUserId == userId);
+                return View(reports.ToList());
+            }
+            else if (User.IsInRole("Patient"))
+            {
+                // Display appointments entered by the logged-in patient user
+                var reports = db.Reports.Where(a => a.Appointment.PatientUserId == userId);
+                return View(reports.ToList());
+            }
+            else if (User.IsInRole("Admin"))
+            {
+                // Display all appointments for admins
+                var reports = db.Reports.Include(r => r.Appointment);
+                return View(reports.ToList());
+            }
+            return View();
+
         }
 
         // GET: Reports/Details/5

@@ -49,9 +49,9 @@ namespace FIT5032_PortfolioV3.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,PhoneNo,ddressDetail,Postcode")] Clinics clinics)
+        public ActionResult Create([Bind(Include = "Id,Name,PhoneNo,AddressDetail,Postcode,Description,Latitude,Longitude")] Clinics clinics)
         {
-            clinics.Id = Guid.NewGuid().ToString(); ;
+            clinics.Id = Guid.NewGuid().ToString();
             ModelState.Clear();
             TryValidateModel(clinics);
             if (ModelState.IsValid)

@@ -17,6 +17,15 @@
         <dd>
             <img class="img-thumbnail" src="@Url.Content("~/Uploads/"+ Model.Path)" />
         </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Appointment.AppointmentDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Appointment.AppointmentDateTime)
+        </dd>
+
         <dt>
             @Html.DisplayNameFor(model => model.Appointment.Description)
         </dt>

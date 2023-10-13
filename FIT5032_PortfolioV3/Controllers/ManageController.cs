@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using FIT5032_PortfolioV3.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace FIT5032_PortfolioV3.Controllers
 {
@@ -75,6 +76,7 @@ namespace FIT5032_PortfolioV3.Controllers
             return View(model);
         }
 
+
         //
         // POST: /Manage/RemoveLogin
         [HttpPost]
@@ -98,6 +100,7 @@ namespace FIT5032_PortfolioV3.Controllers
             }
             return RedirectToAction("ManageLogins", new { Message = message });
         }
+
 
         //
         // GET: /Manage/AddPhoneNumber
