@@ -30,6 +30,7 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 // Display appointments entered by the logged-in staff user
                 var medImages = db.MedImages.Where(a => a.Appointment.StaffUserId == userId);
+                
                 return View(medImages.ToList());
             }
             else if (User.IsInRole("Patient"))
@@ -44,6 +45,7 @@ namespace FIT5032_PortfolioV3.Controllers
                 var medImages = db.MedImages.Include(m => m.Appointment);
                 return View(medImages.ToList());
             }
+            
             //var medImages = db.MedImages.Include(m => m.Appointment);
             return View();
         }
@@ -60,6 +62,7 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.AppointmentId = db.Appointments.Find(medImage.AppointmentId).AppointmentDateTime;
             return View(medImage);
         }
 

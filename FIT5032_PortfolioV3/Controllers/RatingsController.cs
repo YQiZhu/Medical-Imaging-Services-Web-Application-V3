@@ -55,6 +55,7 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime", rating.AppointmentId);
             return View(rating);
         }
 
@@ -71,9 +72,9 @@ namespace FIT5032_PortfolioV3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Patient")]
-        public ActionResult Create([Bind(Include = "Id,Description,Date,Time,AppointmentId")] Rating rating)
+        public ActionResult Create([Bind(Include = "Id,Description,Rate,Date,Time,AppointmentId")] Rating rating)
         {
-            rating.Id = Guid.NewGuid().ToString(); ;
+            rating.Id = Guid.NewGuid().ToString();
             ModelState.Clear();
             TryValidateModel(rating);
             if (ModelState.IsValid)

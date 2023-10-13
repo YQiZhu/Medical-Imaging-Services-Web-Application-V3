@@ -270,6 +270,30 @@
     <Compile Include="Migrations\202310121204509_updateModel1.designer.cs">
       <DependentUpon>202310121204509_updateModel1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202310130800183_updateModel2.cs" />
+    <Compile Include="Migrations\202310130800183_updateModel2.designer.cs">
+      <DependentUpon>202310130800183_updateModel2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310131123338_updateModel3.cs" />
+    <Compile Include="Migrations\202310131123338_updateModel3.designer.cs">
+      <DependentUpon>202310131123338_updateModel3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310131144011_updateModel4.cs" />
+    <Compile Include="Migrations\202310131144011_updateModel4.designer.cs">
+      <DependentUpon>202310131144011_updateModel4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310131146453_updateRatingModel.cs" />
+    <Compile Include="Migrations\202310131146453_updateRatingModel.designer.cs">
+      <DependentUpon>202310131146453_updateRatingModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310131151543_updateRatingModel1.cs" />
+    <Compile Include="Migrations\202310131151543_updateRatingModel1.designer.cs">
+      <DependentUpon>202310131151543_updateRatingModel1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310131206498_updateRatingModel2.cs" />
+    <Compile Include="Migrations\202310131206498_updateRatingModel2.designer.cs">
+      <DependentUpon>202310131206498_updateRatingModel2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Appointments.cs" />
     <Compile Include="Models\AspNetRoles.cs" />
     <Compile Include="Models\AspNetUserLogins.cs" />
@@ -1031,6 +1055,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202310121204509_updateModel1.resx">
       <DependentUpon>202310121204509_updateModel1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310130800183_updateModel2.resx">
+      <DependentUpon>202310130800183_updateModel2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310131123338_updateModel3.resx">
+      <DependentUpon>202310131123338_updateModel3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310131144011_updateModel4.resx">
+      <DependentUpon>202310131144011_updateModel4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310131146453_updateRatingModel.resx">
+      <DependentUpon>202310131146453_updateRatingModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310131151543_updateRatingModel1.resx">
+      <DependentUpon>202310131151543_updateRatingModel1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310131206498_updateRatingModel2.resx">
+      <DependentUpon>202310131206498_updateRatingModel2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

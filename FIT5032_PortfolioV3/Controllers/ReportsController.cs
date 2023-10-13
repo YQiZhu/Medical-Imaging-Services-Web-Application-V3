@@ -55,6 +55,7 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", report.AppointmentId);
             return View(report);
         }
 

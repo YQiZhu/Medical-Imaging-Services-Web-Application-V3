@@ -10,8 +10,16 @@ namespace FIT5032_PortfolioV3.Models
 {
     public class Rating
     {
-        [Required]
         public String Description
+        {
+            get;
+            set;
+        }
+
+        [Required]
+        [Display(Name = "Rate your Appointment from 1 (bad) to 5 (Very Good)")]
+        [Range(1, 5, ErrorMessage = "Rate your Appointment from 1 (bad) to 5 (Very Good)")]
+        public int Rate
         {
             get;
             set;

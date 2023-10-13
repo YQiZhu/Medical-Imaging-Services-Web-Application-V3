@@ -9,20 +9,18 @@ namespace FIT5032_PortfolioV3.Models
     public partial class Appointments
     {
         public string Id { get; set; }
-       
-        [Display(Name = "Appointment Description")]
-        public string Description { get; set; }
 
         [Display(Name = "Appointment room no")]
         public string RoomNo { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please select vaild date")]
         [DataType(DataType.Date)]
         public string Date { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please select vaild working time (8:00 - 18:00)")]
         [DataType(DataType.Time)]
         public string Time { get; set; }
+
         public string AppointmentDateTime
         {
             get { return "Appointment "+Date + " " + Time + " at "+ Clinics.Name; }

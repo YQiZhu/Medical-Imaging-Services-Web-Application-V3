@@ -164,6 +164,10 @@ namespace FIT5032_PortfolioV3.Controllers
                     AspNetUsers aspUser = db.AspNetUsers.Find(user.Id);
                     aspUser.FirstName = model.FirstName;
                     aspUser.LastName = model.LastName;
+                    if (model.DoB != null)
+                    {
+                        aspUser.DoB = model.DoB;
+                    }
                     db.Entry(aspUser).State = EntityState.Modified;
                     db.SaveChanges();
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
@@ -386,9 +390,14 @@ namespace FIT5032_PortfolioV3.Controllers
                 if (result.Succeeded)
                 {
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
-                    UserManager.AddToRole(user.Id, "Patient");
                     if (result.Succeeded)
                     {
+                        UserManager.AddToRole(user.Id, "Patient");
+                        AspNetUsers aspUser = db.AspNetUsers.Find(user.Id);
+                        aspUser.FirstName = model.FirstName;
+                        aspUser.LastName = model.LastName;
+                        db.Entry(aspUser).State = EntityState.Modified;
+                        db.SaveChanges();
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                         return RedirectToLocal(returnUrl);
                     }

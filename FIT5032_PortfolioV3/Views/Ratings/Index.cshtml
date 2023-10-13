@@ -14,7 +14,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Appointment.Description)
+                @Html.DisplayNameFor(model => model.AppointmentId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Rate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Description)
@@ -33,7 +36,10 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Appointment.Description)
+                    @Html.DisplayFor(modelItem => item.AppointmentId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Rate)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Description)
