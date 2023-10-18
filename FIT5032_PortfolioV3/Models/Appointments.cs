@@ -19,11 +19,13 @@ namespace FIT5032_PortfolioV3.Models
 
         [Required(ErrorMessage = "Please select vaild working time (8:00 - 18:00)")]
         [DataType(DataType.Time)]
-        public string Time { get; set; }
+        public string TimeSlotId { get; set; }
+        [ForeignKey("TimeSlotId")]
+        public TimeSlot TimeSlot { get; set; }
 
         public string AppointmentDateTime
         {
-            get { return "Appointment "+Date + " " + Time + " at "+ Clinics.Name; }
+            get { return "Appointment "+Date + " " + TimeSlot.Name + " at "+ Clinics.Name; }
         }
 
         [Required]

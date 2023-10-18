@@ -2,9 +2,24 @@
 @{
     ViewBag.Title = "Register";
 }
+<!-- Include Bootstrap CSS (make sure it matches your Bootstrap version) -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<!-- Include Bootstrap Datepicker CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Include Bootstrap JavaScript (make sure it's the correct version for your Bootstrap version) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Include Bootstrap Datepicker JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
 
 <main aria-labelledby="title">
     <h2 id="title">@ViewBag.Title.</h2>
+    
 
     @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { role = "form" }))
     {
@@ -18,21 +33,29 @@
                 @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
             </div>
         </div>
-        <div class="form-group">
-            @Html.LabelFor(m => m.DoB, htmlAttributes: new { @class = "col-md-2 col-form-label" })
+        @*<div class="row">
+            @Html.LabelFor(m => m.DoB, new { @class = "col-md-2 col-form-label" })
             <div class="col-md-10">
-                @Html.EditorFor(m => m.DoB, new { htmlAttributes = new { @class = "form-control" } })
+                <input type="text" id="datepicker"/>
+                @Html.ValidationMessageFor(model => model.DoB, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+        <div class="row">
+            @Html.LabelFor(m => m.DoB, new { @class = "col-md-2 col-form-label" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.DoB, new {  @id = "datepicker", @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.DoB, "", new { @class = "text-danger" })
             </div>
         </div>
-        <div class="form-group">
+
+        <div class="row">
             @Html.LabelFor(m => m.FirstName, htmlAttributes: new { @class = "col-md-2 col-form-label" })
             <div class="col-md-10">
                 @Html.EditorFor(m => m.FirstName, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
             </div>
         </div>
-        <div class="form-group">
+        <div class="row">
             @Html.LabelFor(m => m.LastName, htmlAttributes: new { @class = "col-md-2 col-form-label" })
             <div class="col-md-10">
                 @Html.EditorFor(m => m.LastName, new { htmlAttributes = new { @class = "form-control" } })
@@ -61,4 +84,13 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        var yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        $("#datepicker").datepicker({
+            format: 'dd-mm-yyyy',
+            endDate: yesterday
+        });
+
+    </script>
 }

@@ -20,6 +20,8 @@ namespace FIT5032_PortfolioV3.Models
         public virtual DbSet<MedImage> MedImages { get; set; }
         public virtual DbSet<Rating> Ratings { get; set; }
         public virtual DbSet<Report> Reports { get; set; }
+        public virtual DbSet<TimeSlot> TimeSlots { get; set; }
+        public virtual DbSet<BookedSlot> BookedSlots { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

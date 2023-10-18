@@ -34,8 +34,6 @@
                         <li>@Html.ActionLink("Reports", "Index", "Reports", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("Rate Your Appointment", "Index", "Ratings", new { area = "" }, new { @class = "nav-link" })</li>
                     }
-
-
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -51,6 +49,10 @@
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/datatables")
+    @Styles.Render("~/Content/datatables")
     @RenderSection("scripts", required: false)
 </body>
 </html>

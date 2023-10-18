@@ -12,6 +12,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using SendGrid.Helpers.Mail;
 using SendGrid;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 namespace FIT5032_PortfolioV3.Controllers
 {
@@ -69,6 +70,7 @@ namespace FIT5032_PortfolioV3.Controllers
             var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
 
+
             // Find the "Staff" role
             var staffRole = roleManager.FindByName("Staff");
 
@@ -77,6 +79,7 @@ namespace FIT5032_PortfolioV3.Controllers
 
             if (User.IsInRole("Patient"))
             {
+
                 ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName");
                 // Display only users with the "Staff" role and their names
                 ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
@@ -99,18 +102,19 @@ namespace FIT5032_PortfolioV3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Patient")]
-        public ActionResult Create([Bind(Include = "Id,RoomNo,Date,Time,ClinicId,PatientUserId,StaffUserId")] Appointments appointments)
+        public ActionResult Create(Appointments appointments)
         {
             appointments.Id = Guid.NewGuid().ToString();
             ModelState.Clear();
-            if (!IsValidTime(appointments.Time))
-            {
-                ModelState.AddModelError("Time", "Please select vaild working time (8:00 - 18:00)");
-            }
+            //if (!IsValidTime(appointments.TimeSlot))
+            //{
+            //    ModelState.AddModelError("Time", "Please select vaild working time (8:00 - 18:00)");
+            //}
             if (IsDateInPast(appointments.Date))
             {
                 ModelState.AddModelError("Date", "Please select vaild date, the selected date cannot be in the past");
             }
+
             TryValidateModel(appointments);
             if (ModelState.IsValid)
             {
@@ -124,7 +128,7 @@ namespace FIT5032_PortfolioV3.Controllers
                     var from = new EmailAddress("zhuyanqi001215@gmail.com", "FIT5032 Example Email User");
                     var toPatient = new EmailAddress(db.AspNetUsers.Find(appointments.PatientUserId).Email, db.AspNetUsers.Find(appointments.PatientUserId).FullName);
                     var toStaff = new EmailAddress(db.AspNetUsers.Find(appointments.StaffUserId).Email, db.AspNetUsers.Find(appointments.StaffUserId).FullName);
-                    var plainTextContent = "Your Appointment book successfully! \nHere is your appointment information: Appointment " + appointments.Date + " " + appointments.Time + " at " + db.Clinics.Find(appointments.ClinicId).Name;
+                    var plainTextContent = "Your Appointment book successfully! \nHere is your appointment information: Appointment " + appointments.Date + " " + appointments.TimeSlot.Name + " at " + db.Clinics.Find(appointments.ClinicId).Name;
                     var htmlContent = "<p>" + plainTextContent + "</p>";
                     var msg = MailHelper.CreateSingleEmail(from, toPatient, "Your Appointment book successfully", plainTextContent, htmlContent);
                     var response = client.SendEmailAsync(msg).Result;// Send the email to Patient
@@ -143,6 +147,7 @@ namespace FIT5032_PortfolioV3.Controllers
             return View(appointments);
         }
 
+        
         private bool IsValidTime(string time)
         {
             if (TimeSpan.TryParse(time, out TimeSpan parsedTime))
@@ -166,6 +171,24 @@ namespace FIT5032_PortfolioV3.Controllers
                 return parsedDate <= DateTime.Today;
             }
             return false;
+        }
+
+        [HttpPost]
+        public ActionResult SelectStaffAndClinic(string clinicId, string staffUserId, string date)
+        {
+            var bookedSlots = db.BookedSlots.Where(b => b.StaffUserId == staffUserId).Where(b => b.Date == date).Select(b => b.SlotId).ToList();
+            var availableSlots = db.TimeSlots.Where(t => !bookedSlots.Contains(t.SlotId)).ToList();
+
+            ViewBag.TimeSlotId = new SelectList(availableSlots, "SlotId", "Name");
+
+            var model = new Appointments
+            {
+                ClinicId = clinicId,
+                StaffUserId = staffUserId,
+                Date = date
+            };
+
+            return View("Create", model);
         }
 
         // GET: Appointments/Edit/5
@@ -215,10 +238,10 @@ namespace FIT5032_PortfolioV3.Controllers
         [Authorize(Roles = "Admin,Patient")]
         public ActionResult Edit([Bind(Include = "Id,RoomNo,Date,Time,ClinicId,PatientUserId,StaffUserId")] Appointments appointments)
         {
-            if (!IsValidTime(appointments.Time))
-            {
-                ModelState.AddModelError("Time", "Please select vaild working time (8:00 - 18:00)");
-            }
+            //if (!IsValidTime(appointments.Time))
+            //{
+            //    ModelState.AddModelError("Time", "Please select vaild working time (8:00 - 18:00)");
+            //}
             if (IsDateInPast(appointments.Date))
             {
                 ModelState.AddModelError("Date", "Please select vaild date, the selected date cannot be in the past");

@@ -148,6 +148,8 @@ namespace FIT5032_PortfolioV3.Controllers
         {
             if (ModelState.IsValid)
             {
+                medImage.Date = DateTime.Now.Date.ToString("yyyy-MM-dd");
+                medImage.Time = DateTime.Now.TimeOfDay.ToString("hh\\:mm");
                 db.Entry(medImage).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

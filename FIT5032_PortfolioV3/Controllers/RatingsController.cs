@@ -75,6 +75,8 @@ namespace FIT5032_PortfolioV3.Controllers
         public ActionResult Create([Bind(Include = "Id,Description,Rate,Date,Time,AppointmentId")] Rating rating)
         {
             rating.Id = Guid.NewGuid().ToString();
+            rating.Date = DateTime.Now.Date.ToString("yyyy-MM-dd");
+            rating.Time = DateTime.Now.TimeOfDay.ToString("hh\\:mm");
             ModelState.Clear();
             TryValidateModel(rating);
             if (ModelState.IsValid)
@@ -114,6 +116,8 @@ namespace FIT5032_PortfolioV3.Controllers
         {
             if (ModelState.IsValid)
             {
+                rating.Date = DateTime.Now.Date.ToString("yyyy-MM-dd");
+                rating.Time = DateTime.Now.TimeOfDay.ToString("hh\\:mm");
                 db.Entry(rating).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

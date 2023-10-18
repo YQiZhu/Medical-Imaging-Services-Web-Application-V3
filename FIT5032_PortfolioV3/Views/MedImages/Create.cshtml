@@ -13,14 +13,7 @@
 
 <h2>Create</h2>
 
-<script>
-    $(document).ready(function () {
-        $("#createDate").datepicker({
-            minDate: 0, // Set minimum date to today
-            dateFormat: "dd/mm/yy" // Use "yy" for year in the date format
-        });
-    });
-</script>
+
 
 @using (Html.BeginForm("Create", "MedImages", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -60,4 +53,5 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+
 }

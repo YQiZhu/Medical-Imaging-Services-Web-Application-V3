@@ -8,7 +8,7 @@
 <h2>Index</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "SelecClinicStaffDate")
 </p>
 
 <table class="table">
@@ -30,7 +30,7 @@
                 @Html.DisplayNameFor(model => model.Date)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Time)
+                @Html.DisplayNameFor(model => model.TimeSlot)
             </th>
             <th></th>
         </tr>
@@ -55,7 +55,7 @@
                     @Html.DisplayFor(modelItem => item.Date)
                 </td>
                 <td class="appointmentTime">
-                    @Html.DisplayFor(modelItem => item.Time)
+                    @Html.DisplayFor(modelItem => item.TimeSlot.Name)
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |

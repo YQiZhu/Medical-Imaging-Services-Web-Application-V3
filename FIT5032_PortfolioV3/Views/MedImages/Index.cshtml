@@ -4,6 +4,11 @@
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+
+<!-- DataTables jQuery library -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
 
 <h2>Index</h2>
 @if (TempData["Message"] != null)
@@ -27,7 +32,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.AppointmentId)
             </th>
-            
+
             <th>
                 @Html.DisplayNameFor(model => model.Date)
             </th>
@@ -47,7 +52,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.AppointmentId)
                 </td>
-                
+
                 <td>
                     @Html.DisplayFor(modelItem => item.Date)
                 </td>

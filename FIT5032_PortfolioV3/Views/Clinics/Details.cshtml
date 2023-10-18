@@ -57,19 +57,19 @@
             <dd class="description">
                 @Html.DisplayFor(model => model.Description)
             </dd>
-        
-        <dt>
-            @Html.DisplayNameFor(model => model.Latitude)
-        </dt>
-        
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Latitude)
+            </dt>
+
             <dd class="latitude">
                 @Html.DisplayFor(model => model.Latitude)
             </dd>
-        
-        <dt>
-            @Html.DisplayNameFor(model => model.Longitude)
-        </dt>
-        
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Longitude)
+            </dt>
+
             <dd class="longitude">
                 @Html.DisplayFor(model => model.Longitude)
             </dd>
@@ -98,4 +98,9 @@
         @Html.ActionLink("Back to List", "Index")
     </p>
 }
-
+@section Scripts {
+    @Scripts.Render("~/bundles/mapbox")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/Scripts/DataTables/jquery.dataTables.js")
+}
