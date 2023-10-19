@@ -318,6 +318,14 @@
     <Compile Include="Migrations\202310191009241_updateModel7.designer.cs">
       <DependentUpon>202310191009241_updateModel7.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202310191529227_updateAppointmentModel1.cs" />
+    <Compile Include="Migrations\202310191529227_updateAppointmentModel1.designer.cs">
+      <DependentUpon>202310191529227_updateAppointmentModel1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310191539204_updateAppointmentModel2.cs" />
+    <Compile Include="Migrations\202310191539204_updateAppointmentModel2.designer.cs">
+      <DependentUpon>202310191539204_updateAppointmentModel2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Appointments.cs" />
     <Compile Include="Models\AspNetRoles.cs" />
     <Compile Include="Models\AspNetUserLogins.cs" />
@@ -1123,6 +1131,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202310191009241_updateModel7.resx">
       <DependentUpon>202310191009241_updateModel7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310191529227_updateAppointmentModel1.resx">
+      <DependentUpon>202310191529227_updateAppointmentModel1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310191539204_updateAppointmentModel2.resx">
+      <DependentUpon>202310191539204_updateAppointmentModel2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

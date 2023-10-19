@@ -15,61 +15,51 @@
 @using (Html.BeginForm("EditSelect", "Appointments", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
-<div class="form-horizontal">
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.HiddenFor(model => model.Id)
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.ClinicId, "ClinicId", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownList("ClinicId", null, htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.ClinicId, "", new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(model => model.Date, new { @id = "datepicker", @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.PatientUserId, "PatientUserId", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownList("PatientUserId", null, htmlAttributes: new { @class = "form-control" })
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+
+    <dl class="form-group">
+        <dt>@Html.LabelFor(model => model.PatientUserId, "Patient Name")</dt>
+        <dd>@Html.DisplayFor(model => model.PatientId.FullName)</dd>
+        <dd style="display: none">
+            @Html.EditorFor(model => model.PatientUserId)
             @Html.ValidationMessageFor(model => model.PatientUserId, "", new { @class = "text-danger" })
-        </div>
-    </div>
+        </dd>
 
-    <div class="form-group" style="display: none">
-        @Html.LabelFor(model => model.TimeSlotId, "TimeSlotId", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10 custom-dropdown">
-            @Html.DropDownList("TimeSlotId", null, htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.TimeSlotId, "", new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="form-group" style="display: none">
-        @Html.LabelFor(model => model.RoomNo, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.RoomNo, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.RoomNo, "", new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="form-group" >
-        @Html.LabelFor(model => model.StaffUserId, "StaffUserId", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
+        <dt>@Html.LabelFor(model => model.ClinicId, "Clinic Name")</dt>
+        <dd>@Html.DisplayFor(model => model.Clinics.Name)</dd>
+        <dd style="display: none">
+            @Html.EditorFor(model => model.ClinicId)
+            @Html.ValidationMessageFor(model => model.ClinicId, "", new { @class = "text-danger" })
+        </dd>
+
+        <dt>@Html.LabelFor(model => model.Date)</dt>
+        <dd>@Html.DisplayFor(model => model.Date)</dd>
+        <dd style="display: none">
+            @Html.TextBoxFor(model => model.Date, new { @id = "datepicker" })
+            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+        </dd>
+
+        <dt>@Html.LabelFor(model => model.StaffUserId, "Select Staff")</dt>
+        <dd>
             @Html.DropDownList("StaffUserId", null, htmlAttributes: new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.StaffUserId, "", new { @class = "text-danger" })
-        </div>
-    </div>
+        </dd>
 
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Save" class="btn btn-default" />
+        <!-- Hidden fields (as per your design) -->
+        @Html.HiddenFor(model => model.TimeSlotId)
+        @Html.HiddenFor(model => model.RoomNo)
+    </dl>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
         </div>
     </div>
-</div>
 }
 
 <div>
@@ -79,14 +69,11 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script type="text/javascript">
-            var tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            $("#datepicker").datepicker({
-                format: 'dd-mm-yyyy',
-                startDate: tomorrow
-            });
-
-
+        var tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        $("#datepicker").datepicker({
+            format: 'dd-mm-yyyy',
+            startDate: tomorrow
+        });
     </script>
 }
-

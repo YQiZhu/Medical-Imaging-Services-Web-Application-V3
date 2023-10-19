@@ -6,12 +6,15 @@
 }
 
 <h2>Index</h2>
-
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
 
-<table class="table">
+<table class="table" id="appointmentsTable">
     <thead>
         <tr>
             <th>
@@ -73,7 +76,11 @@
         $(document).ready(function () {
             $('.table').DataTable();
         });
+
+
+        $(document).ready(function () {
+            $('#appointmentsTable').DataTable();
+        });
     </script>
 }
-<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css"
-      rel="stylesheet" />
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />

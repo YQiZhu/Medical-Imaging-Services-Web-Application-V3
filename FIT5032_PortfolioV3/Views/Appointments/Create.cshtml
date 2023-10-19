@@ -7,86 +7,57 @@
 
 <h2>Create</h2>
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
-<div class="form-horizontal">
-    <h4>Appointments</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.PatientUserId, "PatientUserId", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownList("PatientUserId", null, htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.PatientUserId, "", new { @class = "text-danger" })
-        </div>
-    </div>
+    <div class="form-horizontal">
+        <h4>Appointments</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.ClinicId, "ClinicId", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownList("ClinicId", null, htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.ClinicId, "", new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(model => model.Date, new { @id = "datepicker", @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
-        </div>
-    </div>
-    @*
-                <div class="form-group">
-                @Html.LabelFor(model => model.StaffUserId, "StaffUserId", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.DropDownList("StaffUserId", null, htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.StaffUserId, "", new { @class = "text-danger" })
-                </div>
-            </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.TimeSlotId, "TimeSlotId", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.DropDownList("TimeSlotId", null, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.TimeSlotId, "", new { @class = "text-danger" })
-                    </div>
-                </div>
+        <dl class="form-group">
+            <dt>@Html.LabelFor(model => model.PatientUserId, "Patient Name")</dt>
+            <dd>@Html.DisplayFor(model => model.PatientId.FullName)</dd>
+            <dd style="display: none">
+                @Html.EditorFor(model => model.PatientUserId, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.PatientUserId, "", new { @class = "text-danger" })
+            </dd>
 
+            <dt>@Html.LabelFor(model => model.ClinicId, "Select Clinic")</dt>
+            <dd>
+                @Html.DropDownList("ClinicId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ClinicId, "", new { @class = "text-danger" })
+            </dd>
+
+            <dt>@Html.LabelFor(model => model.Date, "Select Date")</dt>
+            <dd>
+                @Html.TextBoxFor(model => model.Date, new { @id = "datepicker", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+            </dd>
+        </dl>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.RoomNo, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.RoomNo, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.RoomNo, "", new { @class = "text-danger" })
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
             </div>
         </div>
-    *@
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Create" class="btn btn-default" />
-        </div>
     </div>
-    @*<a href="@Url.Action("Select", "Appointments", new { id = Model.Id })" class="btn btn-primary">Next</a>*@
+}
 
+<div>
+    @Html.ActionLink("Back to List", "Index")
 </div>
-    }
 
-    <div>
-        @Html.ActionLink("Back to List", "Index")
-    </div>
-
-    @section Scripts {
-        @Scripts.Render("~/bundles/jqueryval")
-<script type="text/javascript">
-            var tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            $("#datepicker").datepicker({
-                format: 'dd-mm-yyyy',
-                startDate: tomorrow
-            });
-
-       
-</script>
-    }
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryui") 
+    <script type="text/javascript">
+        var tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        $("#datepicker").datepicker({
+            format: 'dd-mm-yyyy',
+            startDate: tomorrow
+        });
+    </script>
+}

@@ -10,6 +10,8 @@ namespace FIT5032_PortfolioV3.Models
         public FIT5032_Model()
             : base("name=FIT5032_Model")
         {
+            this.Configuration.LazyLoadingEnabled = true;
+            this.Configuration.ProxyCreationEnabled = true;
         }
 
         public virtual DbSet<Appointments> Appointments { get; set; }

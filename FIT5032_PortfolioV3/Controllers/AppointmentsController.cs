@@ -15,6 +15,7 @@ using SendGrid;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace FIT5032_PortfolioV3.Controllers
 {
@@ -57,10 +58,16 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Appointments appointments = db.Appointments.Find(id);
+            //Appointments appointments = db.Appointments.Find(id);
+            Appointments appointments = db.Appointments.Include(a => a.TimeSlot).SingleOrDefault(a => a.Id == id);
             if (appointments == null)
             {
                 return HttpNotFound();
+            }
+            if (appointments.TimeSlot == null) 
+            {
+                string mess = "TimeSlot error";
+                TempData["Message"] = mess;
             }
             return View(appointments);
         }
@@ -68,30 +75,34 @@ namespace FIT5032_PortfolioV3.Controllers
         // GET: Appointments/Create
         public ActionResult Create()
         {
-
             var userId = User.Identity.GetUserId();
+            Appointments appointments = new Appointments();
+            appointments.PatientUserId = userId;
+            appointments.PatientId = db.AspNetUsers.Find(userId); ;
+
             var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
             // Find the "Staff" role
             var staffRole = roleManager.FindByName("Staff");
             // Get the user IDs in the "Staff" role
             var staffUserIds = staffRole.Users.Select(r => r.UserId).ToList();
+
             if (User.IsInRole("Patient"))
             {
-                ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName");
+                //ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName");
                 // Display only users with the "Staff" role and their names
                 //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
                 ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name");
             }
             else
             {
-                ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "FullName");
+                //ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "FullName");
                 // Display only users with the "Staff" role and their names
                 //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
                 ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name");
             }
 
-            return View();
+            return View(appointments);
         }
 
         // POST: Appointments/Create
@@ -157,19 +168,19 @@ namespace FIT5032_PortfolioV3.Controllers
                 .Select(bookedSlot => bookedSlot.SlotId).ToList();
             if (User.IsInRole("Patient"))
             {
-                ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
+                //ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
                 // Display only users with the "Staff" role and their names
-                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
+                //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
                 ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
-                ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name", appointments.TimeSlotId);
+                //ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId).OrderBy(item => item.StartTime)), "SlotId", "Name", appointments.TimeSlotId);
             }
             else
             {
-                ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "FullName");
+                //ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "FullName");
                 // Display only users with the "Staff" role and their names
-                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
+                //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
                 ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
-                ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name", appointments.TimeSlotId);
+                //ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)).OrderBy(item => item.StartTime), "SlotId", "Name", appointments.TimeSlotId);
             }
             return View(appointments);
         }
@@ -229,10 +240,10 @@ namespace FIT5032_PortfolioV3.Controllers
                 var staffUserIds = staffRole.Users.Select(r => r.UserId).ToList();
                 var bookedSlotsForStaffOnDate = db.BookedSlots.Where(bookedSlot => bookedSlot.StaffUserId == appointments.StaffUserId && bookedSlot.Date == appointments.Date)
                 .Select(bookedSlot => bookedSlot.SlotId).ToList();
-                ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
-                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
+                //ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
+                //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
                 ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
-                ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name", appointments.TimeSlotId);
+                //ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)).OrderBy(item => item.StartTime), "SlotId", "Name", appointments.TimeSlotId);
                 return View(appointments);
             }
         }
@@ -247,14 +258,16 @@ namespace FIT5032_PortfolioV3.Controllers
             else
             {
                 var userId = User.Identity.GetUserId();
+                appointments.Clinics = db.Clinics.Find(appointments.ClinicId);
+                appointments.PatientId = db.AspNetUsers.Find(userId);
                 var bookedSlotsForStaffOnDate = db.BookedSlots.Where(bookedSlot => bookedSlot.StaffUserId == appointments.StaffUserId && bookedSlot.Date == appointments.Date)
                 .Select(bookedSlot => bookedSlot.SlotId).ToList();
                 var staffIdsInClinic = db.WorkClinic.Where(workClinic => workClinic.ClinicId == appointments.ClinicId).Select(workClinic => workClinic.StaffId).ToList();
-                ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
-                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+                //ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
+                //ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
                 ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffIdsInClinic.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
-                ViewBag.TimeSlotId = new SelectList(db.TimeSlots, "SlotId", "Name", appointments.TimeSlotId);
-                
+                //ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)).OrderBy(item => item.StartTime), "SlotId", "Name", appointments.TimeSlotId);
+
                 return View(appointments);
             }
 
@@ -288,11 +301,15 @@ namespace FIT5032_PortfolioV3.Controllers
            
             // Ensure ViewBag.TimeSlotId is of type List<SelectListItem>
             var userId = User.Identity.GetUserId();
-            ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
-            ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
-            ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffIdsInClinic.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
-            ViewBag.TimeSlotId = new SelectList(db.TimeSlots, "SlotId", "Name", appointments.TimeSlotId);
-            
+            appointments.Clinics = db.Clinics.Find(appointments.ClinicId);
+            appointments.PatientId = db.AspNetUsers.Find(userId);
+            appointments.StaffId = db.AspNetUsers.Find(appointments.StaffUserId);
+            //ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
+            //ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+            //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffIdsInClinic.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
+            ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)).OrderBy(item => item.StartTime), "SlotId", "Name", appointments.TimeSlotId);
+
+
             return View(appointments); ;
         }
 
@@ -309,13 +326,18 @@ namespace FIT5032_PortfolioV3.Controllers
                 try
                 {
                     BookedSlot bookedSlot = db.BookedSlots.Find(appointments.Id);
-                    bookedSlot.BookingId = appointments.Id;
+                    //bookedSlot.BookingId = appointments.Id;
                     bookedSlot.SlotId = appointments.TimeSlotId;
                     bookedSlot.StaffUserId = appointments.StaffUserId;
                     bookedSlot.Date = appointments.Date;
                     db.Entry(bookedSlot).State = EntityState.Modified;
 
+                    //appointments.PatientId = db.AspNetUsers.Find(appointments.PatientUserId);
+                    //appointments.Clinics = db.Clinics.Find(appointments.ClinicId);
+                    //appointments.StaffId = db.AspNetUsers.Find(appointments.StaffUserId);
+                    //appointments.TimeSlot = db.TimeSlots.Find(appointments.TimeSlotId);
                     db.Entry(appointments).State = EntityState.Modified;
+
                     db.SaveChanges();
                 }
                 catch (DbEntityValidationException ex)
@@ -340,7 +362,8 @@ namespace FIT5032_PortfolioV3.Controllers
                     TempData["Message"] = mess;
 
                     var bookedSlotsForStaffOnDate = db.BookedSlots.Where(bookedSlot => bookedSlot.StaffUserId == appointments.StaffUserId && bookedSlot.Date == appointments.Date).Select(bookedSlot => bookedSlot.SlotId).ToList();
-                    ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name");
+                    ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)).OrderBy(item => item.StartTime), "SlotId", "Name", appointments.TimeSlotId);
+
 
                     return View(appointments); // Return to the same view to display validation errors
                 }
@@ -384,7 +407,7 @@ namespace FIT5032_PortfolioV3.Controllers
                 //var availableTimeSlots = db.TimeSlots.Where(timeSlot => !bookedSlotsForStaffOnDate.Contains(timeSlot.SlotId)).ToList();
 
                 // Ensure ViewBag.TimeSlotId is of type List<SelectListItem>
-                ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name");
+                ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)).OrderBy(item => item.StartTime), "SlotId", "Name");
 
 
                 return View(appointments);
@@ -425,17 +448,21 @@ namespace FIT5032_PortfolioV3.Controllers
         public ActionResult Select()
         {
             var appointments = TempData["AppointmentData"] as Appointments;
+            
             if (appointments== null)
             {
                 return RedirectToAction("Create");
             }
             else
             {
-                ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "FullName", appointments.PatientUserId);
-                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
-
+                var userId = User.Identity.GetUserId();
+                appointments.PatientId = db.AspNetUsers.Find(userId); 
+                appointments.Clinics = db.Clinics.Find(appointments.ClinicId);
                 var staffIdsInClinic = db.WorkClinic.Where(workClinic => workClinic.ClinicId == appointments.ClinicId).Select(workClinic => workClinic.StaffId).ToList();
                 ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffIdsInClinic.Contains(a.Id)), "Id", "FullName");
+                //ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
+                //ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+                
                 return View(appointments);
             }
 
@@ -449,6 +476,11 @@ namespace FIT5032_PortfolioV3.Controllers
         [Authorize(Roles = "Admin,Patient")]
         public ActionResult Select(Appointments model)
         {
+            if (model.Clinics == null)
+            {
+                string mess = "C Empty in Select";
+                TempData["Message"] = mess;
+            }
             ModelState.Clear();
             TempData["AppointmentData"] = model; // Store the model data in TempData
             return RedirectToAction("SelectTime");
@@ -456,12 +488,17 @@ namespace FIT5032_PortfolioV3.Controllers
 
         public ActionResult SelectTime()
         {
-            
             var appointments = TempData["AppointmentData"] as Appointments;
             if (appointments == null)
             {
                 return RedirectToAction("Select");
             }
+            var userId = User.Identity.GetUserId();
+
+            appointments.Clinics = db.Clinics.Find(appointments.ClinicId);
+            appointments.PatientId = db.AspNetUsers.Find(userId);
+            appointments.StaffId = db.AspNetUsers.Find(appointments.StaffUserId);
+
             //var staffIdsInClinic = db.WorkClinic.Where(workClinic => workClinic.ClinicId == appointments.ClinicId).Select(workClinic => workClinic.StaffId).ToList();
             //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffIdsInClinic.Contains(a.Id)), "Id", "FullName");
 
@@ -469,12 +506,13 @@ namespace FIT5032_PortfolioV3.Controllers
                 .Select(bookedSlot => bookedSlot.SlotId)
                 .ToList();
             //var availableTimeSlots = db.TimeSlots.Where(timeSlot => !bookedSlotsForStaffOnDate.Contains(timeSlot.SlotId)).ToList();
+            var staffIdsInClinic = db.WorkClinic.Where(workClinic => workClinic.ClinicId == appointments.ClinicId).Select(workClinic => workClinic.StaffId).ToList();
 
             // Ensure ViewBag.TimeSlotId is of type List<SelectListItem>
-            ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "FullName", appointments.PatientUserId);
-            ViewBag.StaffUserId = new SelectList(db.AspNetUsers, "Id", "FullName", appointments.StaffUserId);
-            ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
-            ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name");
+            //ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
+            //ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+            //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffIdsInClinic.Contains(a.Id)), "Id", "FullName");
+            ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)).OrderBy(item => item.StartTime), "SlotId", "Name");
 
             return View(appointments); ;
         }
@@ -498,6 +536,7 @@ namespace FIT5032_PortfolioV3.Controllers
                     bookedSlot.Date = appointments.Date;
                     db.BookedSlots.Add(bookedSlot);
 
+                    //appointments.TimeSlot = db.TimeSlots.Find(appointments.TimeSlotId);
                     db.Appointments.Add(appointments);
                     db.SaveChanges();
                 }
