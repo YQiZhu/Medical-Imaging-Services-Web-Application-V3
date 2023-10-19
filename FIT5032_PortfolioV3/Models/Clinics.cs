@@ -17,6 +17,7 @@ namespace FIT5032_PortfolioV3.Models
         public string Id { get; set; }
 
         [Required]
+        [Display(Name = "Clinic Name")]
         public string Name { get; set; }
 
         [Required]

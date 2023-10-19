@@ -13,6 +13,7 @@ namespace FIT5032_PortfolioV3.Models
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
 
+        [Display(Name = "Appointment Time")]
         public string Name { get { return StartTime.ToString() + " - " + EndTime.ToString(); } }
 
         public virtual ICollection<BookedSlot> BookedSlots { get; set; }

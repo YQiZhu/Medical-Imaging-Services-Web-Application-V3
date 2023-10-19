@@ -306,6 +306,18 @@
     <Compile Include="Migrations\202310180935554_updateDatabaseModel2.designer.cs">
       <DependentUpon>202310180935554_updateDatabaseModel2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202310181128250_updateModel5.cs" />
+    <Compile Include="Migrations\202310181128250_updateModel5.designer.cs">
+      <DependentUpon>202310181128250_updateModel5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310190607368_updateModel6.cs" />
+    <Compile Include="Migrations\202310190607368_updateModel6.designer.cs">
+      <DependentUpon>202310190607368_updateModel6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310191009241_updateModel7.cs" />
+    <Compile Include="Migrations\202310191009241_updateModel7.designer.cs">
+      <DependentUpon>202310191009241_updateModel7.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Appointments.cs" />
     <Compile Include="Models\AspNetRoles.cs" />
     <Compile Include="Models\AspNetUserLogins.cs" />
@@ -314,6 +326,7 @@
     <Compile Include="Models\Clinics.cs" />
     <Compile Include="Models\SendEmailViewModel.cs" />
     <Compile Include="Models\TimeSlot.cs" />
+    <Compile Include="Models\WorkClinic.cs" />
     <Compile Include="Utils\EmailSender.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -1011,7 +1024,11 @@
     <Content Include="Views\MedImages\SendEmail.cshtml" />
     <Content Include="Scripts\moment.min.js.map" />
     <Content Include="Scripts\moment-with-locales.min.js.map" />
-    <Content Include="Views\Appointments\SelecClinicStaffDate.cshtml" />
+    <Content Include="Views\Appointments\SelectStaff.cshtml" />
+    <Content Include="Views\Appointments\Select.cshtml" />
+    <Content Include="Views\Appointments\SelectTime.cshtml" />
+    <Content Include="Views\Appointments\EditSelect.cshtml" />
+    <Content Include="Views\Appointments\EditSelectTime.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202310070746562_InitialModel.resx">
@@ -1097,6 +1114,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202310180935554_updateDatabaseModel2.resx">
       <DependentUpon>202310180935554_updateDatabaseModel2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310181128250_updateModel5.resx">
+      <DependentUpon>202310181128250_updateModel5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310190607368_updateModel6.resx">
+      <DependentUpon>202310190607368_updateModel6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310191009241_updateModel7.resx">
+      <DependentUpon>202310191009241_updateModel7.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -13,6 +13,8 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using SendGrid.Helpers.Mail;
 using SendGrid;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
+using System.Data.Entity.Validation;
+using System.Diagnostics;
 
 namespace FIT5032_PortfolioV3.Controllers
 {
@@ -28,19 +30,19 @@ namespace FIT5032_PortfolioV3.Controllers
             if (User.IsInRole("Staff"))
             {
                 // Display appointments entered by the logged-in staff user
-                var appointments = db.Appointments.Where(a => a.StaffId.Id == userId).Include(a => a.PatientId).Include(a => a.Clinics);
+                var appointments = db.Appointments.Where(a => a.StaffId.Id == userId).Include(a => a.PatientId).Include(a => a.Clinics).Include(a => a.TimeSlot);
                 return View(appointments.ToList());
             }
             else if (User.IsInRole("Patient"))
             {
                 // Display appointments entered by the logged-in patient user
-                var appointments = db.Appointments.Where(a => a.PatientId.Id == userId).Include(a => a.StaffId).Include(a => a.Clinics);
+                var appointments = db.Appointments.Where(a => a.PatientId.Id == userId).Include(a => a.StaffId).Include(a => a.Clinics).Include(a => a.TimeSlot);
                 return View(appointments.ToList());
             }
             else if (User.IsInRole("Admin"))
             {
                 // Display all appointments for admins
-                var appointments = db.Appointments.Include(a => a.StaffId).Include(a => a.PatientId).Include(a => a.Clinics);
+                var appointments = db.Appointments.Include(a => a.StaffId).Include(a => a.PatientId).Include(a => a.Clinics).Include(a => a.TimeSlot);
                 return View(appointments.ToList());
             }
 
@@ -66,33 +68,29 @@ namespace FIT5032_PortfolioV3.Controllers
         // GET: Appointments/Create
         public ActionResult Create()
         {
+
             var userId = User.Identity.GetUserId();
             var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
-
-
             // Find the "Staff" role
             var staffRole = roleManager.FindByName("Staff");
-
             // Get the user IDs in the "Staff" role
             var staffUserIds = staffRole.Users.Select(r => r.UserId).ToList();
-
             if (User.IsInRole("Patient"))
             {
-
                 ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName");
                 // Display only users with the "Staff" role and their names
-                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
+                //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
                 ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name");
             }
             else
             {
                 ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "FullName");
                 // Display only users with the "Staff" role and their names
-                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
+                //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
                 ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name");
             }
-            
+
             return View();
         }
 
@@ -102,93 +100,36 @@ namespace FIT5032_PortfolioV3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Patient")]
-        public ActionResult Create(Appointments appointments)
+        public ActionResult Create([Bind(Include = "Id,RoomNo,Date,TimeSlotId,ClinicId,PatientUserId,StaffUserId")] Appointments appointments)
         {
-            appointments.Id = Guid.NewGuid().ToString();
+            
             ModelState.Clear();
-            //if (!IsValidTime(appointments.TimeSlot))
-            //{
-            //    ModelState.AddModelError("Time", "Please select vaild working time (8:00 - 18:00)");
-            //}
-            if (IsDateInPast(appointments.Date))
-            {
-                ModelState.AddModelError("Date", "Please select vaild date, the selected date cannot be in the past");
-            }
-
             TryValidateModel(appointments);
+           /*
             if (ModelState.IsValid)
             {
                 db.Appointments.Add(appointments);
                 db.SaveChanges();
 
-                const String API_KEY = "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";
-                try
-                { 
-                    var client = new SendGridClient(API_KEY);
-                    var from = new EmailAddress("zhuyanqi001215@gmail.com", "FIT5032 Example Email User");
-                    var toPatient = new EmailAddress(db.AspNetUsers.Find(appointments.PatientUserId).Email, db.AspNetUsers.Find(appointments.PatientUserId).FullName);
-                    var toStaff = new EmailAddress(db.AspNetUsers.Find(appointments.StaffUserId).Email, db.AspNetUsers.Find(appointments.StaffUserId).FullName);
-                    var plainTextContent = "Your Appointment book successfully! \nHere is your appointment information: Appointment " + appointments.Date + " " + appointments.TimeSlot.Name + " at " + db.Clinics.Find(appointments.ClinicId).Name;
-                    var htmlContent = "<p>" + plainTextContent + "</p>";
-                    var msg = MailHelper.CreateSingleEmail(from, toPatient, "Your Appointment book successfully", plainTextContent, htmlContent);
-                    var response = client.SendEmailAsync(msg).Result;// Send the email to Patient
-                    msg = MailHelper.CreateSingleEmail(from, toStaff, "Your have a new Appointment", plainTextContent, htmlContent);
-                }
-                catch
-                {
-                    return View();
-                }
                 return RedirectToAction("Index");
             }
-            ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "Email", appointments.PatientUserId);
-            ViewBag.StaffUserId = new SelectList(db.AspNetUsers, "Id", "Email", appointments.StaffUserId);
-            ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
-
-            return View(appointments);
-        }
-
-        
-        private bool IsValidTime(string time)
-        {
-            if (TimeSpan.TryParse(time, out TimeSpan parsedTime))
+            else
             {
-                TimeSpan startTime = new TimeSpan(8, 0, 0);
-                TimeSpan endTime = new TimeSpan(18, 0, 0);
-
-                if (parsedTime >= startTime && parsedTime <= endTime)
+                string mess = "";
+                foreach (var modelState in ModelState.Values)
                 {
-                    return true;
+                    foreach (var error in modelState.Errors)
+                    {
+                        // Log or print the error message to identify the specific issue
+                        mess = mess + error.ErrorMessage;
+                    }
                 }
-            }
+                TempData["Message"] = mess;
 
-            return false;
-        }
-
-        private bool IsDateInPast(String date)
-        {
-            if (DateTime.TryParse(date, out DateTime parsedDate))
-            {
-                return parsedDate <= DateTime.Today;
-            }
-            return false;
-        }
-
-        [HttpPost]
-        public ActionResult SelectStaffAndClinic(string clinicId, string staffUserId, string date)
-        {
-            var bookedSlots = db.BookedSlots.Where(b => b.StaffUserId == staffUserId).Where(b => b.Date == date).Select(b => b.SlotId).ToList();
-            var availableSlots = db.TimeSlots.Where(t => !bookedSlots.Contains(t.SlotId)).ToList();
-
-            ViewBag.TimeSlotId = new SelectList(availableSlots, "SlotId", "Name");
-
-            var model = new Appointments
-            {
-                ClinicId = clinicId,
-                StaffUserId = staffUserId,
-                Date = date
-            };
-
-            return View("Create", model);
+                
+            }*/
+            TempData["AppointmentData"] = appointments; // Store the model data in TempData
+                return RedirectToAction("Select");
         }
 
         // GET: Appointments/Edit/5
@@ -198,34 +139,37 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            TempData["AppointmentEditId"] = id;
             Appointments appointments = db.Appointments.Find(id);
             if (appointments == null)
             {
                 return HttpNotFound();
             }
-
+            
             var userId = User.Identity.GetUserId();
             var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
-
             // Find the "Staff" role
             var staffRole = roleManager.FindByName("Staff");
-
             // Get the user IDs in the "Staff" role
             var staffUserIds = staffRole.Users.Select(r => r.UserId).ToList();
+            var bookedSlotsForStaffOnDate = db.BookedSlots.Where(bookedSlot => bookedSlot.StaffUserId == appointments.StaffUserId && bookedSlot.Date == appointments.Date)
+                .Select(bookedSlot => bookedSlot.SlotId).ToList();
             if (User.IsInRole("Patient"))
             {
-                ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName");
+                ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
                 // Display only users with the "Staff" role and their names
-                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
-                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name");
+                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
+                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+                ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name", appointments.TimeSlotId);
             }
             else
             {
                 ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "FullName");
                 // Display only users with the "Staff" role and their names
-                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName");
-                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name");
+                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
+                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+                ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name", appointments.TimeSlotId);
             }
             return View(appointments);
         }
@@ -236,21 +180,15 @@ namespace FIT5032_PortfolioV3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Patient")]
-        public ActionResult Edit([Bind(Include = "Id,RoomNo,Date,Time,ClinicId,PatientUserId,StaffUserId")] Appointments appointments)
+        public ActionResult Edit([Bind(Include = "Id,RoomNo,Date,TimeSlotId,ClinicId,PatientUserId,StaffUserId")] Appointments appointments)
         {
-            //if (!IsValidTime(appointments.Time))
-            //{
-            //    ModelState.AddModelError("Time", "Please select vaild working time (8:00 - 18:00)");
-            //}
-            if (IsDateInPast(appointments.Date))
-            {
-                ModelState.AddModelError("Date", "Please select vaild date, the selected date cannot be in the past");
-            }
             if (ModelState.IsValid)
             {
-                db.Entry(appointments).State = EntityState.Modified;
-                db.SaveChanges();
-                const String API_KEY = "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";
+
+                //db.Entry(appointments).State = EntityState.Modified;
+                //db.SaveChanges();
+
+                /*const String API_KEY = "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";
                 try
                 {
                     var client = new SendGridClient(API_KEY);
@@ -266,14 +204,193 @@ namespace FIT5032_PortfolioV3.Controllers
                 catch
                 {
                     return View();
+                }*/
+                TempData["AppointmentEdit"] = appointments;
+                return RedirectToAction("EditSelect");
+            }
+            else
+            {
+                string mess = "";
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        // Log or print the error message to identify the specific issue
+                        mess = mess + error.ErrorMessage;
+                    }
+                }
+                TempData["Message"] = mess;
+                var userId = User.Identity.GetUserId();
+                var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+                var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
+                // Find the "Staff" role
+                var staffRole = roleManager.FindByName("Staff");
+                // Get the user IDs in the "Staff" role
+                var staffUserIds = staffRole.Users.Select(r => r.UserId).ToList();
+                var bookedSlotsForStaffOnDate = db.BookedSlots.Where(bookedSlot => bookedSlot.StaffUserId == appointments.StaffUserId && bookedSlot.Date == appointments.Date)
+                .Select(bookedSlot => bookedSlot.SlotId).ToList();
+                ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
+                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffUserIds.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
+                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+                ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name", appointments.TimeSlotId);
+                return View(appointments);
+            }
+        }
+
+        public ActionResult EditSelect()
+        {
+            var appointments = TempData["AppointmentEdit"] as Appointments;
+            if (appointments == null)
+            {
+                return RedirectToAction("Edit");
+            }
+            else
+            {
+                var userId = User.Identity.GetUserId();
+                var bookedSlotsForStaffOnDate = db.BookedSlots.Where(bookedSlot => bookedSlot.StaffUserId == appointments.StaffUserId && bookedSlot.Date == appointments.Date)
+                .Select(bookedSlot => bookedSlot.SlotId).ToList();
+                var staffIdsInClinic = db.WorkClinic.Where(workClinic => workClinic.ClinicId == appointments.ClinicId).Select(workClinic => workClinic.StaffId).ToList();
+                ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
+                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffIdsInClinic.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
+                ViewBag.TimeSlotId = new SelectList(db.TimeSlots, "SlotId", "Name", appointments.TimeSlotId);
+                
+                return View(appointments);
+            }
+
+            //var staffIdsInClinic = db.WorkClinic.Where(workClinic => workClinic.ClinicId == appointments.ClinicId).Select(workClinic => workClinic.StaffId).ToList();
+            //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffIdsInClinic.Contains(a.Id)), "Id", "FullName");
+            //return View(appointments);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Patient")]
+        public ActionResult EditSelect(Appointments model)
+        {
+            ModelState.Clear();
+            TempData["AppointmentEdit"] = model; // Store the model data in TempData
+            return RedirectToAction("EditSelectTime");
+        }
+
+        public ActionResult EditSelectTime()
+        {
+            
+            var appointments = TempData["AppointmentEdit"] as Appointments;
+            appointments.Id = TempData["AppointmentEditId"] as String;
+            if (appointments == null)
+            {
+                return RedirectToAction("Select");
+            }
+            var bookedSlotsForStaffOnDate = db.BookedSlots.Where(bookedSlot => bookedSlot.StaffUserId == appointments.StaffUserId && bookedSlot.Date == appointments.Date)
+                .Select(bookedSlot => bookedSlot.SlotId).ToList();
+             var staffIdsInClinic = db.WorkClinic.Where(workClinic => workClinic.ClinicId == appointments.ClinicId).Select(workClinic => workClinic.StaffId).ToList();
+           
+            // Ensure ViewBag.TimeSlotId is of type List<SelectListItem>
+            var userId = User.Identity.GetUserId();
+            ViewBag.PatientUserId = new SelectList(db.AspNetUsers.Where(a => a.Id == userId), "Id", "FullName", appointments.PatientUserId);
+            ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+            ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffIdsInClinic.Contains(a.Id)), "Id", "FullName", appointments.StaffUserId);
+            ViewBag.TimeSlotId = new SelectList(db.TimeSlots, "SlotId", "Name", appointments.TimeSlotId);
+            
+            return View(appointments); ;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Patient")]
+        public ActionResult EditSelectTime(Appointments appointments)
+        {
+            //appointments.Id = Guid.NewGuid().ToString();
+            ModelState.Clear();
+            TryValidateModel(appointments);
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    BookedSlot bookedSlot = db.BookedSlots.Find(appointments.Id);
+                    bookedSlot.BookingId = appointments.Id;
+                    bookedSlot.SlotId = appointments.TimeSlotId;
+                    bookedSlot.StaffUserId = appointments.StaffUserId;
+                    bookedSlot.Date = appointments.Date;
+                    db.Entry(bookedSlot).State = EntityState.Modified;
+
+                    db.Entry(appointments).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                catch (DbEntityValidationException ex)
+                {
+                    foreach (var validationErrors in ex.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            var errorMessage = $"Property: {validationError.PropertyName} Error: {validationError.ErrorMessage}";
+                            ModelState.AddModelError(validationError.PropertyName, validationError.ErrorMessage);
+                        }
+                    }
+                    string mess = "";
+                    foreach (var modelState in ModelState.Values)
+                    {
+                        foreach (var error in modelState.Errors)
+                        {
+                            // Log or print the error message to identify the specific issue
+                            mess = mess + error.ErrorMessage;
+                        }
+                    }
+                    TempData["Message"] = mess;
+
+                    var bookedSlotsForStaffOnDate = db.BookedSlots.Where(bookedSlot => bookedSlot.StaffUserId == appointments.StaffUserId && bookedSlot.Date == appointments.Date).Select(bookedSlot => bookedSlot.SlotId).ToList();
+                    ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name");
+
+                    return View(appointments); // Return to the same view to display validation errors
+                }
+
+                const String API_KEY = "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";
+                try
+                {
+                    var client = new SendGridClient(API_KEY);
+                    var from = new EmailAddress("zhuyanqi001215@gmail.com", "FIT5032 Example Email User");
+                    var toPatient = new EmailAddress(db.AspNetUsers.Find(appointments.PatientUserId).Email, db.AspNetUsers.Find(appointments.PatientUserId).FullName);
+                    var toStaff = new EmailAddress(db.AspNetUsers.Find(appointments.StaffUserId).Email, db.AspNetUsers.Find(appointments.StaffUserId).FullName);
+                    var plainTextContent = "Your Appointment Change successfully! \nHere is your appointment information: " + appointments.Date + " " + appointments.TimeSlot + " at " + db.Clinics.Find(appointments.ClinicId).Name;
+                    var htmlContent = "<p>" + plainTextContent + "</p>";
+                    var msg = MailHelper.CreateSingleEmail(from, toPatient, "Your Appointment change successfully", plainTextContent, htmlContent);
+                    var response = client.SendEmailAsync(msg).Result;// Send the email to Patient
+                    msg = MailHelper.CreateSingleEmail(from, toStaff, "Your have a change of Appointment", plainTextContent, htmlContent);
+                }
+                catch
+                {
+                    return View();
                 }
                 return RedirectToAction("Index");
             }
-            ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "Email", appointments.PatientUserId);
-            ViewBag.StaffUserId = new SelectList(db.AspNetUsers, "Id", "Email", appointments.StaffUserId);
-            ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
-            return View(appointments);
+            else
+            {
+                string mess = "";
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        // Log or print the error message to identify the specific issue
+                        mess = mess + error.ErrorMessage;
+                    }
+                }
+                TempData["Message"] = mess;
+
+                // Ensure ViewBag.TimeSlotId is of type List<SelectListItem>
+                var bookedSlotsForStaffOnDate = db.BookedSlots.Where(bookedSlot => bookedSlot.StaffUserId == appointments.StaffUserId && bookedSlot.Date == appointments.Date)
+               .Select(bookedSlot => bookedSlot.SlotId)
+               .ToList();
+                //var availableTimeSlots = db.TimeSlots.Where(timeSlot => !bookedSlotsForStaffOnDate.Contains(timeSlot.SlotId)).ToList();
+
+                // Ensure ViewBag.TimeSlotId is of type List<SelectListItem>
+                ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name");
+
+
+                return View(appointments);
+            }
         }
+
 
         // GET: Appointments/Delete/5
         [Authorize(Roles = "Admin,Patient")]
@@ -298,9 +415,163 @@ namespace FIT5032_PortfolioV3.Controllers
         public ActionResult DeleteConfirmed(string id)
         {
             Appointments appointments = db.Appointments.Find(id);
+            BookedSlot bookedSlot = db.BookedSlots.Find(id);
+            db.BookedSlots.Remove(bookedSlot);
             db.Appointments.Remove(appointments);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        public ActionResult Select()
+        {
+            var appointments = TempData["AppointmentData"] as Appointments;
+            if (appointments== null)
+            {
+                return RedirectToAction("Create");
+            }
+            else
+            {
+                ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "FullName", appointments.PatientUserId);
+                ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+
+                var staffIdsInClinic = db.WorkClinic.Where(workClinic => workClinic.ClinicId == appointments.ClinicId).Select(workClinic => workClinic.StaffId).ToList();
+                ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffIdsInClinic.Contains(a.Id)), "Id", "FullName");
+                return View(appointments);
+            }
+
+           //var staffIdsInClinic = db.WorkClinic.Where(workClinic => workClinic.ClinicId == appointments.ClinicId).Select(workClinic => workClinic.StaffId).ToList();
+            //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffIdsInClinic.Contains(a.Id)), "Id", "FullName");
+            //return View(appointments);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Patient")]
+        public ActionResult Select(Appointments model)
+        {
+            ModelState.Clear();
+            TempData["AppointmentData"] = model; // Store the model data in TempData
+            return RedirectToAction("SelectTime");
+        }
+
+        public ActionResult SelectTime()
+        {
+            
+            var appointments = TempData["AppointmentData"] as Appointments;
+            if (appointments == null)
+            {
+                return RedirectToAction("Select");
+            }
+            //var staffIdsInClinic = db.WorkClinic.Where(workClinic => workClinic.ClinicId == appointments.ClinicId).Select(workClinic => workClinic.StaffId).ToList();
+            //ViewBag.StaffUserId = new SelectList(db.AspNetUsers.Where(a => staffIdsInClinic.Contains(a.Id)), "Id", "FullName");
+
+            var bookedSlotsForStaffOnDate = db.BookedSlots.Where(bookedSlot => bookedSlot.StaffUserId == appointments.StaffUserId && bookedSlot.Date == appointments.Date)
+                .Select(bookedSlot => bookedSlot.SlotId)
+                .ToList();
+            //var availableTimeSlots = db.TimeSlots.Where(timeSlot => !bookedSlotsForStaffOnDate.Contains(timeSlot.SlotId)).ToList();
+
+            // Ensure ViewBag.TimeSlotId is of type List<SelectListItem>
+            ViewBag.PatientUserId = new SelectList(db.AspNetUsers, "Id", "FullName", appointments.PatientUserId);
+            ViewBag.StaffUserId = new SelectList(db.AspNetUsers, "Id", "FullName", appointments.StaffUserId);
+            ViewBag.ClinicId = new SelectList(db.Clinics, "Id", "Name", appointments.ClinicId);
+            ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name");
+
+            return View(appointments); ;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Patient")]
+        public ActionResult SelectTime(Appointments appointments)
+        {
+            appointments.Id = Guid.NewGuid().ToString();
+            ModelState.Clear();
+            TryValidateModel(appointments);
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    BookedSlot bookedSlot = new BookedSlot();
+                    bookedSlot.BookingId = appointments.Id;
+                    bookedSlot.SlotId = appointments.TimeSlotId;
+                    bookedSlot.StaffUserId = appointments.StaffUserId;
+                    bookedSlot.Date = appointments.Date;
+                    db.BookedSlots.Add(bookedSlot);
+
+                    db.Appointments.Add(appointments);
+                    db.SaveChanges();
+                }
+                catch (DbEntityValidationException ex)
+                {
+                    foreach (var validationErrors in ex.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            var errorMessage = $"Property: {validationError.PropertyName} Error: {validationError.ErrorMessage}";
+                            ModelState.AddModelError(validationError.PropertyName, validationError.ErrorMessage);
+                        }
+                    }
+                    string mess = "";
+                    foreach (var modelState in ModelState.Values)
+                    {
+                        foreach (var error in modelState.Errors)
+                        {
+                            // Log or print the error message to identify the specific issue
+                            mess = mess + error.ErrorMessage;
+                        }
+                    }
+                    TempData["Message"] = mess;
+
+                    var bookedSlotsForStaffOnDate = db.BookedSlots.Where(bookedSlot => bookedSlot.StaffUserId == appointments.StaffUserId && bookedSlot.Date == appointments.Date).Select(bookedSlot => bookedSlot.SlotId).ToList();
+                    ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name");
+
+                    return View(appointments); // Return to the same view to display validation errors
+                }
+
+                const String API_KEY = "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";
+                try
+                {
+                    var client = new SendGridClient(API_KEY);
+                    var from = new EmailAddress("zhuyanqi001215@gmail.com", "FIT5032 Example Email User");
+                    var toPatient = new EmailAddress(db.AspNetUsers.Find(appointments.PatientUserId).Email, db.AspNetUsers.Find(appointments.PatientUserId).FullName);
+                    var toStaff = new EmailAddress(db.AspNetUsers.Find(appointments.StaffUserId).Email, db.AspNetUsers.Find(appointments.StaffUserId).FullName);
+                    var plainTextContent = "Your Appointment book successfully! \nHere is your appointment information: Appointment " + appointments.Date + " " + appointments.TimeSlot + " at " + db.Clinics.Find(appointments.ClinicId).Name;
+                    var htmlContent = "<p>" + plainTextContent + "</p>";
+                    var msg = MailHelper.CreateSingleEmail(from, toPatient, "Your Appointment book successfully", plainTextContent, htmlContent);
+                    var response = client.SendEmailAsync(msg).Result; // Send the email to Patient
+                    msg = MailHelper.CreateSingleEmail(from, toStaff, "Your have a new Appointment", plainTextContent, htmlContent);
+                }
+                catch
+                {
+                    return View();
+                }
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                string mess = "";
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        // Log or print the error message to identify the specific issue
+                        mess = mess + error.ErrorMessage;
+                    }
+                }
+                TempData["Message"] = mess;
+
+                // Ensure ViewBag.TimeSlotId is of type List<SelectListItem>
+                var bookedSlotsForStaffOnDate = db.BookedSlots.Where(bookedSlot => bookedSlot.StaffUserId == appointments.StaffUserId && bookedSlot.Date == appointments.Date)
+               .Select(bookedSlot => bookedSlot.SlotId)
+               .ToList();
+                //var availableTimeSlots = db.TimeSlots.Where(timeSlot => !bookedSlotsForStaffOnDate.Contains(timeSlot.SlotId)).ToList();
+
+                // Ensure ViewBag.TimeSlotId is of type List<SelectListItem>
+                ViewBag.TimeSlotId = new SelectList(db.TimeSlots.Where(a => !bookedSlotsForStaffOnDate.Contains(a.SlotId)), "SlotId", "Name");
+
+
+                return View(appointments);
+            }
         }
 
         protected override void Dispose(bool disposing)

@@ -12,7 +12,11 @@ namespace FIT5032_PortfolioV3
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
+            routes.MapRoute(
+                name: "SelecClinicStaffDate",
+                url: "Appointments/SelecClinicStaffDate",
+                defaults: new { controller = "Appointments", action = "SelecClinicStaffDate" }
+            );
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
@@ -23,7 +27,7 @@ namespace FIT5032_PortfolioV3
                 url: "MedImages/SendEmail/{id}",
                 defaults: new { controller = "MedImages", action = "SendEmail", id = UrlParameter.Optional }
             );
-
+            
         }
     }
 }

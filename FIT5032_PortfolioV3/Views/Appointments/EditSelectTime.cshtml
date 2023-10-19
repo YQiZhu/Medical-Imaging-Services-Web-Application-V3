@@ -1,22 +1,22 @@
 ﻿@model FIT5032_PortfolioV3.Models.Appointments
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "EditSelectTime";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Edit</h2>
+<h2>EditSelectTime</h2>
+
 
 @if (TempData["Message"] != null)
 {
     <div class="alert alert-success">@TempData["Message"]</div>
 }
-@using (Html.BeginForm())
+
+@using (Html.BeginForm("EditSelectTime", "Appointments", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
-
     <div class="form-horizontal">
-        <h4>Appointments</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Id)
@@ -43,31 +43,31 @@
             </div>
         </div>
 
-        <div class="form-group" style="display: none">
+        <div class="form-group">
             @Html.LabelFor(model => model.TimeSlotId, "TimeSlotId", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10 custom-dropdown">
                 @Html.DropDownList("TimeSlotId", null, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.TimeSlotId, "", new { @class = "text-danger" })
             </div>
         </div>
-            <div class="form-group" style="display: none">
-                @Html.LabelFor(model => model.RoomNo, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.RoomNo, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.RoomNo, "", new { @class = "text-danger" })
-                </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.RoomNo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.RoomNo, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.RoomNo, "", new { @class = "text-danger" })
             </div>
-            <div class="form-group" style="display: none">
-                @Html.LabelFor(model => model.StaffUserId, "StaffUserId", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.DropDownList("StaffUserId", null, htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.StaffUserId, "", new { @class = "text-danger" })
-                </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.StaffUserId, "StaffUserId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("StaffUserId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.StaffUserId, "", new { @class = "text-danger" })
             </div>
-        
+        </div>
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Edit" class="btn btn-default" />
+                <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </div>
     </div>
@@ -80,13 +80,14 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script type="text/javascript">
-        var tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        $("#datepicker").datepicker({
-            format: 'dd-mm-yyyy',
-            startDate: tomorrow
-        });
+            var tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            $("#datepicker").datepicker({
+                format: 'dd-mm-yyyy',
+                startDate: tomorrow
+            });
 
 
     </script>
 }
+

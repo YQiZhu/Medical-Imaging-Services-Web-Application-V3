@@ -18,7 +18,6 @@ namespace FIT5032_PortfolioV3.Models
         public string Date { get; set; }
 
         [Required(ErrorMessage = "Please select vaild working time (8:00 - 18:00)")]
-        [DataType(DataType.Time)]
         public string TimeSlotId { get; set; }
         [ForeignKey("TimeSlotId")]
         public TimeSlot TimeSlot { get; set; }

@@ -22,6 +22,7 @@ namespace FIT5032_PortfolioV3.Models
         public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<TimeSlot> TimeSlots { get; set; }
         public virtual DbSet<BookedSlot> BookedSlots { get; set; }
+        public virtual DbSet<WorkClinic> WorkClinic { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

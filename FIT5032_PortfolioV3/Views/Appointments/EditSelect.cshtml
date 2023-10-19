@@ -1,0 +1,92 @@
+﻿@model FIT5032_PortfolioV3.Models.Appointments
+
+@{
+    ViewBag.Title = "EditSelect";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>EditSelect</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+@using (Html.BeginForm("EditSelect", "Appointments", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+<div class="form-horizontal">
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.Id)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ClinicId, "ClinicId", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("ClinicId", null, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.ClinicId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(model => model.Date, new { @id = "datepicker", @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.PatientUserId, "PatientUserId", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("PatientUserId", null, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.PatientUserId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group" style="display: none">
+        @Html.LabelFor(model => model.TimeSlotId, "TimeSlotId", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10 custom-dropdown">
+            @Html.DropDownList("TimeSlotId", null, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.TimeSlotId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group" style="display: none">
+        @Html.LabelFor(model => model.RoomNo, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.RoomNo, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.RoomNo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group" >
+        @Html.LabelFor(model => model.StaffUserId, "StaffUserId", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("StaffUserId", null, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.StaffUserId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+            var tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            $("#datepicker").datepicker({
+                format: 'dd-mm-yyyy',
+                startDate: tomorrow
+            });
+
+
+    </script>
+}
+
