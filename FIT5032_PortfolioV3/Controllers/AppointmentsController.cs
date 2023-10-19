@@ -476,11 +476,6 @@ namespace FIT5032_PortfolioV3.Controllers
         [Authorize(Roles = "Admin,Patient")]
         public ActionResult Select(Appointments model)
         {
-            if (model.Clinics == null)
-            {
-                string mess = "C Empty in Select";
-                TempData["Message"] = mess;
-            }
             ModelState.Clear();
             TempData["AppointmentData"] = model; // Store the model data in TempData
             return RedirectToAction("SelectTime");
