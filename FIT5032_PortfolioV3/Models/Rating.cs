@@ -55,6 +55,6 @@ namespace FIT5032_PortfolioV3.Models
             set;
         }
         [ForeignKey("AppointmentId")]
-        public Appointments Appointment { get; set; }
+        public virtual Appointments Appointment { get; set; }
     }
 }

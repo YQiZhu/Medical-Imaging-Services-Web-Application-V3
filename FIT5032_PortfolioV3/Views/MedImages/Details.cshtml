@@ -51,15 +51,13 @@
         <a href="@Url.Action("SendEmail", "MedImages", new { id = Model.Id })" class="btn btn-primary">Send X-ray Image to Email</a>
     </p>
     <p>
-        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-        @Html.ActionLink("Back to List", "Index")
+        @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-primary" })
     </p>
 }
 @if (User.IsInRole("Staff"))
 {
     <p>
-        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-        @Html.ActionLink("Back to List", "Index")
+        @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-primary" })
     </p>
 }
 @if (User.IsInRole("Patient"))
@@ -68,7 +66,7 @@
         <a href="@Url.Action("SendEmail", "MedImages", new { id = Model.Id })" class="btn btn-primary">Send X-ray Image to Email</a>
     </p>
     <p>
-        @Html.ActionLink("Back to List", "Index")
+        @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-primary" })
     </p>
 
 }

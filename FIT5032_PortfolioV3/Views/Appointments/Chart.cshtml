@@ -1,0 +1,40 @@
+﻿@model Dictionary<string, int>
+@{
+    ViewBag.Title = "Appointment Distribution by Time Slot";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Appointment Distribution by Time Slot</h2>
+<style>
+    #timeslotChart {
+        max-height: 400px;
+    }
+</style>
+<canvas id="timeslotChart" width="400" height="400"></canvas>
+
+@section Scripts {
+    <script>
+        // Generate random color array
+        function generateRandomColor() {
+            var r = Math.floor(Math.random() * 256),
+                g = Math.floor(Math.random() * 256),
+                b = Math.floor(Math.random() * 256);
+            return `rgba(${r}, ${g}, ${b}, 0.6)`;
+        }
+
+        var colors = Array.from({ length: 60 }, generateRandomColor);
+
+        var ctx = document.getElementById('timeslotChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Keys)),
+                datasets: [{
+                    label: 'Appointments per Time Slot',
+                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Values)),
+                    backgroundColor: colors
+                }]
+            }
+        });
+    </script>
+}

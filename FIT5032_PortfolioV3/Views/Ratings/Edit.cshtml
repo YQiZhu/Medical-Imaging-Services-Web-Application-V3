@@ -6,68 +6,64 @@
 }
 
 <h2>Edit</h2>
-
-
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
-<div class="form-horizontal">
-    <h4>Rating</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.HiddenFor(model => model.Id)
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.TextAreaFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-        </div>
-    </div>
+    <div class="form-horizontal">
+        <h4>Rating</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Rate, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Rate, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Time, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Time, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.AppointmentId, "AppointmentId", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownList("AppointmentId", null, htmlAttributes: new { @class = "form-control" })
+    <dl class="form-group">
+        <dt>@Html.LabelFor(model => model.AppointmentId, "AppointmentId")</dt>
+        <dd>@Html.DisplayFor(model => model.Appointment.AppointmentDateTime)</dd>
+        <dd style="display: none">
+            @Html.EditorFor(model => model.AppointmentId)
             @Html.ValidationMessageFor(model => model.AppointmentId, "", new { @class = "text-danger" })
-        </div>
-    </div>
+        </dd>
 
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Save" class="btn btn-default" />
+        <dt>@Html.LabelFor(model => model.Description)</dt>
+        <dd>
+            @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+        </dd>
+
+        <dt>@Html.LabelFor(model => model.Rate)</dt>
+        <dd>
+            @Html.DropDownListFor(model => model.Rate, new SelectList(Enumerable.Range(1, 5)), new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
+        </dd>
+
+        <dd style="display: none">
+            @Html.EditorFor(model => model.Date)
+            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+        </dd>
+
+        <dd style="display: none">
+            @Html.EditorFor(model => model.Time)
+            @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
+        </dd>
+
+
+    </dl>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
         </div>
     </div>
-</div>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    <p></p>
+    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-primary" })
 </div>
 
 @section Scripts {

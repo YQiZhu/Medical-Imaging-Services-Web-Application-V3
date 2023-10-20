@@ -55,14 +55,35 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", report.AppointmentId);
+            //ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId), "Id", "Description", report.AppointmentId);
             return View(report);
         }
 
         // GET: Reports/Create
         public ActionResult Create()
         {
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime");
+            var userId = User.Identity.GetUserId();
+            bool hasAppointment = db.Appointments.Any(a => a.StaffUserId == userId);
+
+            if (!hasAppointment)
+            {
+                // If no appointment is found, redirect the user to the Index page with a warning message.
+                TempData["Message"] = "You cannot write report as you have no appointments!";
+                return RedirectToAction("Index");
+            }
+
+            // Get a list of AppointmentIds that have already been rated
+            var reportedAppointmentIds = db.Reports.Select(r => r.AppointmentId).ToList();
+
+            // Filter appointments for the current user that have not been rated
+            var unratedAppointments = db.Appointments.Where(a => a.PatientUserId == userId && !reportedAppointmentIds.Contains(a.Id)).ToList();
+
+            if (!unratedAppointments.Any())
+            {
+                TempData["Message"] = "You cannot rate as all your appointments have been rated!";
+                return RedirectToAction("Index");
+            }
+            ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId && !reportedAppointmentIds.Contains(a.Id)), "Id", "AppointmentDateTime");
             return View();
         }
 
@@ -74,7 +95,18 @@ namespace FIT5032_PortfolioV3.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Description,Date,Time,AppointmentId")] Report report)
         {
-            report.Id = Guid.NewGuid().ToString(); ;
+            var userId = User.Identity.GetUserId();
+            if (db.Ratings.Any(r => r.AppointmentId == report.AppointmentId))
+            {
+                ModelState.AddModelError("", "This appointment has already been reported.");
+                
+                ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId), "Id", "AppointmentDateTime", report.AppointmentId);
+                return View(report);
+            }
+            report.Id = Guid.NewGuid().ToString();
+            report.Date = DateTime.Now.Date.ToString("yyyy-MM-dd");
+            report.Time = DateTime.Now.TimeOfDay.ToString("hh\\:mm");
+
             ModelState.Clear();
             TryValidateModel(report);
             if (ModelState.IsValid)
@@ -83,8 +115,7 @@ namespace FIT5032_PortfolioV3.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", report.AppointmentId);
+            ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.StaffUserId == userId), "Id", "AppointmentDateTime", report.AppointmentId);
             return View(report);
         }
 
@@ -100,7 +131,8 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", report.AppointmentId);
+            //var userId = User.Identity.GetUserId();
+            //ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.StaffUserId == userId), "Id", "AppointmentDateTime", report.AppointmentId);
             return View(report);
         }
 
@@ -112,13 +144,14 @@ namespace FIT5032_PortfolioV3.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Description,Date,Time,AppointmentId")] Report report)
         {
+            report.Date = DateTime.Now.Date.ToString("yyyy-MM-dd");
+            report.Time = DateTime.Now.TimeOfDay.ToString("hh\\:mm");
             if (ModelState.IsValid)
             {
                 db.Entry(report).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", report.AppointmentId);
             return View(report);
         }
 

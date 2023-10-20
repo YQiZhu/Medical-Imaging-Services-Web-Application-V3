@@ -608,6 +608,105 @@ namespace FIT5032_PortfolioV3.Controllers
             }
         }
 
+        private string ConvertAppointmentsToCsv(List<Appointments> appointments)
+        {
+            string csvData = "RoomNo,Date,TimeSlot,AppointmentInformation,Clinic,Patient,Staff\n";
+
+            foreach (var appointment in appointments)
+            {
+                string appointmentInfo = appointment.AppointmentDateTime;
+                string clinicName = appointment.Clinics?.Name ?? "N/A";
+                string patientName = appointment.PatientId?.FullName ?? "N/A"; // Assuming AspNetUsers has a UserName property
+                string staffName = appointment.StaffId?.FullName ?? "N/A";     // Assuming AspNetUsers has a UserName property
+                string timeSlotName = appointment.TimeSlot?.Name ?? "N/A";
+
+                csvData += $"{appointment.RoomNo},{appointment.Date},{timeSlotName},{appointmentInfo},{clinicName},{patientName},{staffName}\n";
+            }
+
+            return csvData;
+        }
+
+        [Authorize]
+        public ActionResult ExportAppointmentsToCsv()
+        {
+            var userId = User.Identity.GetUserId();
+            List<Appointments> appointments;
+
+            if (User.IsInRole("Admin"))
+            {
+                // Admins can export all appointments
+                appointments = db.Appointments.Include(a => a.Clinics).Include(a => a.PatientId).Include(a => a.StaffId).Include(a => a.TimeSlot).ToList();
+            }
+            else if (User.IsInRole("Staff"))
+            {
+                // Staff can only export appointments related to themselves
+                appointments = db.Appointments.Where(a => a.StaffUserId == userId).Include(a => a.Clinics).Include(a => a.PatientId).Include(a => a.TimeSlot).ToList();
+            }
+            else if (User.IsInRole("Patient"))
+            {
+                // Patients can only export appointments related to themselves
+                appointments = db.Appointments.Where(a => a.PatientUserId == userId).Include(a => a.Clinics).Include(a => a.StaffId).Include(a => a.TimeSlot).ToList();
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+
+            string csvData = ConvertAppointmentsToCsv(appointments);
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(csvData);
+            var stream = new System.IO.MemoryStream(bytes);
+
+            return new FileStreamResult(stream, "text/csv") { FileDownloadName = "Appointments.csv" };
+        }
+
+        public ActionResult Chart()
+        {
+            // Get the current user's Id
+            string currentUserId = User.Identity.GetUserId();
+
+            // Get all appointments
+            var appointments = db.Appointments.ToList();
+
+            // Check if the user is an admin, patient, or staff
+            if (User.IsInRole("Admin"))
+            {
+                // Do nothing, admin can view all appointments
+            }
+            else if (User.IsInRole("Patient"))
+            {
+                // Filter the appointments list to only include appointments for the current patient
+                appointments = appointments.Where(a => a.PatientUserId == currentUserId).ToList();
+            }
+            else if (User.IsInRole("Staff"))
+            {
+                // Filter the appointments list to only include appointments associated with the current staff member
+                appointments = appointments.Where(a => a.StaffUserId == currentUserId).ToList();
+            }
+
+            // Group appointments by TimeSlot
+            var groupedAppointments = appointments
+                .GroupBy(a => a.TimeSlotId)
+                .Select(group => new
+                {
+                    TimeSlot = group.Key,
+                    Count = group.Count()
+                })
+                .ToList();
+
+            // Prepare data for the view
+            Dictionary<string, int> data = new Dictionary<string, int>();
+            foreach (var item in groupedAppointments)
+            {
+                var timeslot = db.TimeSlots.Find(item.TimeSlot);
+                data.Add(timeslot.Name, item.Count);
+            }
+
+            return View(data);
+        }
+
+
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

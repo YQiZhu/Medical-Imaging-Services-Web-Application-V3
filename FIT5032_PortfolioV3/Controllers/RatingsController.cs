@@ -55,14 +55,34 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime", rating.AppointmentId);
+            //ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId, "Id", "AppointmentDateTime", rating.AppointmentId);
             return View(rating);
         }
 
         // GET: Ratings/Create
         public ActionResult Create()
         {
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime");
+            var userId = User.Identity.GetUserId();
+            bool hasAppointment = db.Appointments.Any(a => a.PatientUserId == userId);
+
+            if (!hasAppointment)
+            {
+                // If no appointment is found, redirect the user to the Index page with a warning message.
+                TempData["Message"] = "You cannot rate as you have no appointments!";
+                return RedirectToAction("Index");
+            }
+            // Get a list of AppointmentIds that have already been rated
+            var ratedAppointmentIds = db.Ratings.Select(r => r.AppointmentId).ToList();
+
+            // Filter appointments for the current user that have not been rated
+            var unratedAppointments = db.Appointments.Where(a => a.PatientUserId == userId && !ratedAppointmentIds.Contains(a.Id)).ToList();
+
+            if (!unratedAppointments.Any())
+            {
+                TempData["Message"] = "You cannot rate as all your appointments have been rated!";
+                return RedirectToAction("Index");
+            }
+            ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId && !ratedAppointmentIds.Contains(a.Id)), "Id", "AppointmentDateTime");
             return View();
         }
 
@@ -74,6 +94,16 @@ namespace FIT5032_PortfolioV3.Controllers
         [Authorize(Roles = "Admin,Patient")]
         public ActionResult Create([Bind(Include = "Id,Description,Rate,Date,Time,AppointmentId")] Rating rating)
         {
+            var userId = User.Identity.GetUserId();
+            // Check if a rating for this appointment already exists
+            if (db.Ratings.Any(r => r.AppointmentId == rating.AppointmentId))
+            {
+                ModelState.AddModelError("", "This appointment has already been rated.");
+                
+                ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId), "Id", "AppointmentDateTime", rating.AppointmentId);
+                return View(rating);
+            }
+
             rating.Id = Guid.NewGuid().ToString();
             rating.Date = DateTime.Now.Date.ToString("yyyy-MM-dd");
             rating.Time = DateTime.Now.TimeOfDay.ToString("hh\\:mm");
@@ -86,7 +116,7 @@ namespace FIT5032_PortfolioV3.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", rating.AppointmentId);
+            ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId), "Id", "AppointmentDateTime", rating.AppointmentId);
             return View(rating);
         }
 
@@ -102,7 +132,8 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", rating.AppointmentId);
+            //var userId = User.Identity.GetUserId();
+            //ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId), "Id", "AppointmentDateTime", rating.AppointmentId);
             return View(rating);
         }
 
@@ -112,18 +143,29 @@ namespace FIT5032_PortfolioV3.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Patient")]
-        public ActionResult Edit([Bind(Include = "Id,Description,Date,Time,AppointmentId")] Rating rating)
+        public ActionResult Edit([Bind(Include = "Id,Description,Rate,Date,Time,AppointmentId")] Rating rating)
         {
+           rating.Date = DateTime.Now.Date.ToString("yyyy-MM-dd");
+           rating.Time = DateTime.Now.TimeOfDay.ToString("hh\\:mm");
             if (ModelState.IsValid)
             {
-                rating.Date = DateTime.Now.Date.ToString("yyyy-MM-dd");
-                rating.Time = DateTime.Now.TimeOfDay.ToString("hh\\:mm");
+                
                 db.Entry(rating).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "Description", rating.AppointmentId);
-            return View(rating);
+           
+                string mess = "";
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        // Log or print the error message to identify the specific issue
+                        mess = mess + error.ErrorMessage;
+                    }
+                }
+                TempData["Message"] = mess;
+                return View(rating);
         }
 
         // GET: Ratings/Delete/5

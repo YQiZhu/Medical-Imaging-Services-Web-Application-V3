@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Linq;
 
+
 namespace FIT5032_PortfolioV3.Models
 {
     public partial class FIT5032_Model : DbContext
@@ -63,6 +64,10 @@ namespace FIT5032_PortfolioV3.Models
             modelBuilder.Entity<Clinics>()
                 .Property(e => e.Longitude)
                 .HasPrecision(11, 8);
+
+            modelBuilder.Entity<Clinics>()
+                .Property(e => e.AverageRate)
+                .HasPrecision(2, 1);
         }
     }
 }

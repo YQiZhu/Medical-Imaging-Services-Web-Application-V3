@@ -8,6 +8,12 @@ namespace FIT5032_PortfolioV3.Models
 
     public partial class Appointments
     {
+        public virtual ICollection<Rating> Ratings { get; set; }
+        public Appointments()
+        {
+            Ratings = new HashSet<Rating>();
+        }
+
         public string Id { get; set; }
 
         [Display(Name = "Appointment room no")]
@@ -22,6 +28,7 @@ namespace FIT5032_PortfolioV3.Models
         [ForeignKey("TimeSlotId")]
         public virtual TimeSlot TimeSlot { get; set; }
 
+        [Display(Name = "Appointment Information")]
         public string AppointmentDateTime
         {
             get { return "Appointment "+Date + " " + TimeSlot.Name + " at "+ Clinics.Name; }

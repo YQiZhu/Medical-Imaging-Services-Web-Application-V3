@@ -326,6 +326,14 @@
     <Compile Include="Migrations\202310191539204_updateAppointmentModel2.designer.cs">
       <DependentUpon>202310191539204_updateAppointmentModel2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202310200224498_updateClinicModel.cs" />
+    <Compile Include="Migrations\202310200224498_updateClinicModel.designer.cs">
+      <DependentUpon>202310200224498_updateClinicModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310200312119_updateClinicModel1.cs" />
+    <Compile Include="Migrations\202310200312119_updateClinicModel1.designer.cs">
+      <DependentUpon>202310200312119_updateClinicModel1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Appointments.cs" />
     <Compile Include="Models\AspNetRoles.cs" />
     <Compile Include="Models\AspNetUserLogins.cs" />
@@ -1032,11 +1040,12 @@
     <Content Include="Views\MedImages\SendEmail.cshtml" />
     <Content Include="Scripts\moment.min.js.map" />
     <Content Include="Scripts\moment-with-locales.min.js.map" />
-    <Content Include="Views\Appointments\SelectStaff.cshtml" />
     <Content Include="Views\Appointments\Select.cshtml" />
     <Content Include="Views\Appointments\SelectTime.cshtml" />
     <Content Include="Views\Appointments\EditSelect.cshtml" />
     <Content Include="Views\Appointments\EditSelectTime.cshtml" />
+    <Content Include="Views\Clinics\Chart.cshtml" />
+    <Content Include="Views\Appointments\Chart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202310070746562_InitialModel.resx">
@@ -1137,6 +1146,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202310191539204_updateAppointmentModel2.resx">
       <DependentUpon>202310191539204_updateAppointmentModel2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310200224498_updateClinicModel.resx">
+      <DependentUpon>202310200224498_updateClinicModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310200312119_updateClinicModel1.resx">
+      <DependentUpon>202310200312119_updateClinicModel1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

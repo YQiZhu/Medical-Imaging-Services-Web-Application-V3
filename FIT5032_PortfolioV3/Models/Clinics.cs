@@ -12,6 +12,7 @@ namespace FIT5032_PortfolioV3.Models
         public Clinics()
         {
             Appointments = new HashSet<Appointments>();
+            AverageRate = 0;
         }
 
         public string Id { get; set; }
@@ -30,6 +31,10 @@ namespace FIT5032_PortfolioV3.Models
 
         [Required]
         public string Postcode { get; set; }
+
+        [Required]
+        [Column(TypeName = "numeric")]
+        public decimal AverageRate { get; set; }
 
         public string Description { get; set; }
 

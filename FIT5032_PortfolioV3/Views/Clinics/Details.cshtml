@@ -53,49 +53,52 @@
         <dt>
             @Html.DisplayNameFor(model => model.Description)
         </dt>
-        <dl class="coordinates">
-            <dd class="description">
-                @Html.DisplayFor(model => model.Description)
-            </dd>
+        <dd class="description">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.Latitude)
-            </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.Latitude)
+        </dt>
 
-            <dd class="latitude">
-                @Html.DisplayFor(model => model.Latitude)
-            </dd>
+        <dd class="latitude">
+            @Html.DisplayFor(model => model.Latitude)
+        </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.Longitude)
-            </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.Longitude)
+        </dt>
 
-            <dd class="longitude">
-                @Html.DisplayFor(model => model.Longitude)
-            </dd>
-        </dl>
+        <dd class="longitude">
+            @Html.DisplayFor(model => model.Longitude)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AverageRate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AverageRate)
+        </dd>
+
     </dl>
 </div>
-@section Scripts {
-    @Scripts.Render("~/bundles/mapbox")
-}
+
 @if (User.IsInRole("Patient"))
 {
     <p>
-        @Html.ActionLink("Back to List", "Index")
+        @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-primary" })
     </p>
 }
 @if (User.IsInRole("Admin"))
 {
     <p>
-        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-        @Html.ActionLink("Back to List", "Index")
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-primary" })
     </p>
 }
 @if (User.IsInRole("Staff"))
 {
     <p>
-        @Html.ActionLink("Back to List", "Index")
+        @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-primary" })
     </p>
 }
 @section Scripts {
