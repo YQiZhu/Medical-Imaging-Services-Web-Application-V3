@@ -12,6 +12,9 @@
 </style>
 <canvas id="timeslotChart" width="400" height="400"></canvas>
 
+<button id="downloadButton" class = "btn btn-info">Download Chart</button>
+
+
 @section Scripts {
     <script>
         // Generate random color array
@@ -34,6 +37,22 @@
                     data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Values)),
                     backgroundColor: colors
                 }]
+            },
+            options: {
+                animation: {
+                    onComplete: function() {
+                        // Convert the chart into an image
+                        var imageUrl = document.getElementById('timeslotChart').toDataURL("image/png");
+
+                        // Set the image source to the base64 encoded PNG
+                        document.getElementById('downloadButton').addEventListener('click', function () {
+                            var a = document.createElement('a');
+                            a.href = imageUrl;
+                            a.download = 'chart.png';
+                            a.click();
+                        });
+                    }
+                }
             }
         });
     </script>

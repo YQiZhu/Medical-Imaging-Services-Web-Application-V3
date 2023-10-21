@@ -5,7 +5,7 @@
 *
 * @author Jian Liew <jian.liew@monash.edu>
 */
-const TOKEN = "pk.eyJ1IjoieWFucWl6aHUiLCJhIjoiY2xuaGI1d2QyMGV0ajJybzc4ZHYwNDkyeSJ9.3f5-bGGgFdiYgK5HaojEtw";
+const TOKEN = "pk.eyJ1IjoieWFucWl6aHUiLCJhIjoiY2xvMDd5ZTg5MTNjbDJzcGQ4dnl5c3R4MiJ9.WakWOH1-hKwJYjogDOCDaQ";
 var locations = [];
 // The first step is obtain all the latitude and longitude from the HTML
 // The below is a simple jQuery selector

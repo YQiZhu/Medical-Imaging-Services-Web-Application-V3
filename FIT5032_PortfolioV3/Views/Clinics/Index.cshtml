@@ -41,13 +41,7 @@
 
 <h2>Clinics</h2>
 <div id='map' style='height: 300px;'></div>
-<script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoieWFucWl6aHUiLCJhIjoiY2xuaGI1d2QyMGV0ajJybzc4ZHYwNDkyeSJ9.3f5 - bGGgFdiYgK5HaojEtw'
-    var map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v10'
-    });
-</script>
+
 <p></p>
 @if (User.IsInRole("Admin"))
 {
@@ -82,6 +76,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.AverageRate)
             </th>
+            <th style="display:none;">
+                @Html.DisplayNameFor(model => model.Info)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -89,30 +86,34 @@
         @foreach (var item in Model)
         {
             <tr class="coordinates">
-                <td class="description">
+                <td >
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
-                <td>
+                <td >
                     @Html.DisplayFor(modelItem => item.PhoneNo)
                 </td>
-                <td>
+                <td >
                     @Html.DisplayFor(modelItem => item.AddressDetail)
                 </td>
-                <td>
+                <td >
                     @Html.DisplayFor(modelItem => item.Postcode)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
+                
                 <td class="latitude" style="display:none;">
                     @Html.DisplayFor(modelItem => item.Latitude)
                 </td>
                 <td class="longitude" style="display:none;">
                     @Html.DisplayFor(modelItem => item.Longitude)
                 </td>
-                <td>
+                <td >
                     @Html.DisplayFor(modelItem => item.AverageRate)
                 </td>
+                <td class="description" style="display:none;">
+    @Html.DisplayFor(modelItem => item.Info)
+</td>
                 @if (User.IsInRole("Admin"))
                 {
                     <td>

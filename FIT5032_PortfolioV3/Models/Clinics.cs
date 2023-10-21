@@ -15,6 +15,11 @@ namespace FIT5032_PortfolioV3.Models
             AverageRate = 0;
         }
 
+        public string Info
+        {
+            get { return "CLinic Name: " + Name + "<br>Phone: " + PhoneNo + "<br>Address: " + AddressDetail; }
+        }
+
         public string Id { get; set; }
 
         [Required]

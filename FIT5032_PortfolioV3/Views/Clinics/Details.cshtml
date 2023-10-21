@@ -7,13 +7,6 @@
 
 <h2>Details</h2>
 <div id='map' style='height: 300px;'></div>
-<script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoieWFucWl6aHUiLCJhIjoiY2xuaGI1d2QyMGV0ajJybzc4ZHYwNDkyeSJ9.3f5 - bGGgFdiYgK5HaojEtw'
-    var map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v10'
-    });
-</script>
 <div>
     <h4>Clinics</h4>
     <hr />
@@ -53,7 +46,7 @@
         <dt>
             @Html.DisplayNameFor(model => model.Description)
         </dt>
-        <dd class="description">
+        <dd>
             @Html.DisplayFor(model => model.Description)
         </dd>
 
@@ -78,7 +71,12 @@
         <dd>
             @Html.DisplayFor(model => model.AverageRate)
         </dd>
-
+        <dt style="display: none">
+            @Html.DisplayNameFor(model => model.AverageRate)
+        </dt>
+        <dd class="description" style="display: none">
+            @Html.DisplayFor(model => model.Info)
+        </dd>
     </dl>
 </div>
 
