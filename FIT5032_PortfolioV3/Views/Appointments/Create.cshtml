@@ -16,26 +16,37 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-        <dl class="form-group">
-            <dt>@Html.LabelFor(model => model.PatientUserId, "Patient Name")</dt>
+    <dl class="form-group">
+        <dt>@Html.LabelFor(model => model.PatientUserId, "Patient Name")</dt>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <dd>
+                @Html.DropDownList("PatientUserId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.PatientUserId, "", new { @class = "text-danger" })
+            </dd>
+        }
+        else
+        {
             <dd>@Html.DisplayFor(model => model.PatientId.FullName)</dd>
             <dd style="display: none">
                 @Html.EditorFor(model => model.PatientUserId, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.PatientUserId, "", new { @class = "text-danger" })
             </dd>
+        }
 
-            <dt>@Html.LabelFor(model => model.ClinicId, "Select Clinic")</dt>
-            <dd>
-                @Html.DropDownList("ClinicId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.ClinicId, "", new { @class = "text-danger" })
-            </dd>
+        <dt>@Html.LabelFor(model => model.ClinicId, "Select Clinic")</dt>
+        <dd>
+            @Html.DropDownList("ClinicId", null, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.ClinicId, "", new { @class = "text-danger" })
+        </dd>
 
-            <dt>@Html.LabelFor(model => model.Date, "Select Date")</dt>
-            <dd>
-                @Html.TextBoxFor(model => model.Date, new { @id = "datepicker", @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
-            </dd>
-        </dl>
+        <dt>@Html.LabelFor(model => model.Date, "Select Date")</dt>
+        <dd>
+            @Html.TextBoxFor(model => model.Date, new { @id = "datepicker", @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+        </dd>
+    </dl>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">

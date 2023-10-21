@@ -58,7 +58,7 @@
                 @Html.DisplayNameFor(model => model.Path)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AppointmentId)
+                @Html.DisplayNameFor(model => model.Appointment.AppointmentDateTime)
             </th>
 
             <th>
@@ -78,7 +78,7 @@
                     <img class="img-thumbnail" src="@Url.Content("~/Uploads/"+ item.Path)" style="max-width: 100px; max-height: 100px;" />
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.AppointmentId)
+                    @Html.DisplayFor(modelItem => item.Appointment.AppointmentDateTime)
                 </td>
 
                 <td>

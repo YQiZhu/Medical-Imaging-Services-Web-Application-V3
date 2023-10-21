@@ -334,11 +334,16 @@
     <Compile Include="Migrations\202310200312119_updateClinicModel1.designer.cs">
       <DependentUpon>202310200312119_updateClinicModel1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202310210404379_setUpBulkEmailModel.cs" />
+    <Compile Include="Migrations\202310210404379_setUpBulkEmailModel.designer.cs">
+      <DependentUpon>202310210404379_setUpBulkEmailModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Appointments.cs" />
     <Compile Include="Models\AspNetRoles.cs" />
     <Compile Include="Models\AspNetUserLogins.cs" />
     <Compile Include="Models\AspNetUsers.cs" />
     <Compile Include="Models\BookedSlot.cs" />
+    <Compile Include="Models\BulkEmailViewModel.cs" />
     <Compile Include="Models\Clinics.cs" />
     <Compile Include="Models\SendEmailViewModel.cs" />
     <Compile Include="Models\TimeSlot.cs" />
@@ -1046,6 +1051,8 @@
     <Content Include="Views\Appointments\EditSelectTime.cshtml" />
     <Content Include="Views\Clinics\Chart.cshtml" />
     <Content Include="Views\Appointments\Chart.cshtml" />
+    <Content Include="Views\Manage\SendBulkEmails.cshtml" />
+    <Content Include="Views\Appointments\StaffCalendar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202310070746562_InitialModel.resx">
@@ -1152,6 +1159,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202310200312119_updateClinicModel1.resx">
       <DependentUpon>202310200312119_updateClinicModel1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310210404379_setUpBulkEmailModel.resx">
+      <DependentUpon>202310210404379_setUpBulkEmailModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

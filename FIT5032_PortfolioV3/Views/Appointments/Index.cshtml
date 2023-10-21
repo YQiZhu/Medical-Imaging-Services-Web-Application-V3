@@ -1,9 +1,11 @@
 ﻿@model IEnumerable<FIT5032_PortfolioV3.Models.Appointments>
-
+@using System.Globalization
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
 <style>
     /* Styles for Previous, Next, and Page Numbers */
     .dataTables_paginate .paginate_button {
@@ -47,6 +49,11 @@
     <p>
         @Html.ActionLink("Create New", "Create")
     </p>
+}
+
+@if (User.IsInRole("Staff"))
+{
+    <div id='calendar'></div>
 }
 
 
@@ -128,20 +135,52 @@
 <p>
     <a href="@Url.Action("ExportAppointmentsToCsv", "Appointments")" class="btn" style="background-color: #34a8eb; color: white;">Export Appointments to CSV</a>
     @Html.ActionLink("View Appointments Distribution by Time Slot", "Chart", "Appointments", null, new { @class = "btn btn-info" })
-
 </p>
+
 @section Scripts {
-    @Styles.Render("~/Content/DataTables/css/dataTables.bootstrap4.min.css")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/Scripts/DataTables/jquery.dataTables.js")
+    @Styles.Render("~/bundles/fullcalendar-css")
+    @Scripts.Render("~/bundles/fullcalendar-js")
+    @Styles.Render("~/Content/DataTables/css/dataTables.bootstrap4.min.css")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' rel='stylesheet' />
+
     <script>
         $(document).ready(function () {
             $('.table').DataTable();
+
+            if ('@User.IsInRole("Staff")' === 'True') {
+        var events = [];
+
+        @foreach (var item in Model)
+{
+    <text>
+        var startDate = '@(DateTime.ParseExact(item.Date.ToString(), "dd-MM-yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd"))';
+        var startTime = '@item.TimeSlot.StartTime';
+        var endTime = '@item.TimeSlot.EndTime';
+
+        events.push({
+            title: '@item.TimeSlot.Name',
+            start: startDate + 'T' + startTime,
+            end: startDate + 'T' + endTime
+        });
+    </text>
+}
+
+
+        $('#calendar').fullCalendar({
+            defaultView: 'month',
+            events: events
+        });
+    }
         });
 
         $('.dataTables_paginate').on('mousedown', '.paginate_button', function (e) {
             e.preventDefault();
         });
+
     </script>
 }

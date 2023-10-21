@@ -64,26 +64,35 @@ namespace FIT5032_PortfolioV3.Controllers
         {
             var userId = User.Identity.GetUserId();
             bool hasAppointment = db.Appointments.Any(a => a.StaffUserId == userId);
+            bool isAdmin = User.IsInRole("Admin");
 
-            if (!hasAppointment)
+            if (!hasAppointment && !isAdmin)
             {
                 // If no appointment is found, redirect the user to the Index page with a warning message.
                 TempData["Message"] = "You cannot write report as you have no appointments!";
                 return RedirectToAction("Index");
             }
 
-            // Get a list of AppointmentIds that have already been rated
+            // Get a list of AppointmentIds that have already been reported
             var reportedAppointmentIds = db.Reports.Select(r => r.AppointmentId).ToList();
 
-            // Filter appointments for the current user that have not been rated
+            // Filter appointments for the current user that have not been raported
             var unratedAppointments = db.Appointments.Where(a => a.PatientUserId == userId && !reportedAppointmentIds.Contains(a.Id)).ToList();
 
-            if (!unratedAppointments.Any())
+            if (!unratedAppointments.Any() && !isAdmin)
             {
-                TempData["Message"] = "You cannot rate as all your appointments have been rated!";
+                TempData["Message"] = "You cannot report as all your appointments have been reportd!";
                 return RedirectToAction("Index");
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId && !reportedAppointmentIds.Contains(a.Id)), "Id", "AppointmentDateTime");
+            if (User.IsInRole("Admin"))
+            {
+                ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime");
+
+            }
+            else
+            {
+                ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId && !reportedAppointmentIds.Contains(a.Id)), "Id", "AppointmentDateTime");
+            }
             return View();
         }
 
@@ -96,7 +105,7 @@ namespace FIT5032_PortfolioV3.Controllers
         public ActionResult Create([Bind(Include = "Id,Description,Date,Time,AppointmentId")] Report report)
         {
             var userId = User.Identity.GetUserId();
-            if (db.Ratings.Any(r => r.AppointmentId == report.AppointmentId))
+            if (db.Reports.Any(r => r.AppointmentId == report.AppointmentId))
             {
                 ModelState.AddModelError("", "This appointment has already been reported.");
                 
@@ -115,7 +124,14 @@ namespace FIT5032_PortfolioV3.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.StaffUserId == userId), "Id", "AppointmentDateTime", report.AppointmentId);
+            if (User.IsInRole("Admin"))
+            {
+                ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime", report.AppointmentId);
+            }
+            else
+            {
+                ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.StaffUserId == userId), "Id", "AppointmentDateTime", report.AppointmentId);
+            }
             return View(report);
         }
 

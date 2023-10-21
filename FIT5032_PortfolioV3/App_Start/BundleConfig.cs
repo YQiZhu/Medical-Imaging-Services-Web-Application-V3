@@ -46,6 +46,14 @@ namespace FIT5032_PortfolioV3
             bundles.Add(new StyleBundle("~/Content/datatables").Include(
                 "~/Content/DataTables/css/dataTables.bootstrap.min.css" 
                 ));
+
+            bundles.Add(new StyleBundle("~/bundles/fullcalendar-css").Include(
+                "~/Content/fullcalendar.min.css"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/fullcalendar-js").Include(
+                        "~/Scripts/fullcalendar.min.js"));
+
         }
     }
 }

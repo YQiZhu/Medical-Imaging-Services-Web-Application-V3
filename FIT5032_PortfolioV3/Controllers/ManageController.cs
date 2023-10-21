@@ -8,6 +8,10 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using FIT5032_PortfolioV3.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Collections.Generic;
+using SendGrid.Helpers.Mail;
+using SendGrid;
+using System.IO;
 
 namespace FIT5032_PortfolioV3.Controllers
 {
@@ -336,7 +340,103 @@ namespace FIT5032_PortfolioV3.Controllers
             base.Dispose(disposing);
         }
 
-#region Helpers
+        [Authorize(Roles = "Admin")]
+        public ActionResult SendBulkEmails()
+        {
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
+            var dbContext = new FIT5032_Model();
+
+            // Find the "Staff" role
+            var staffRole = roleManager.FindByName("Staff");
+            // Get the user IDs in the "Staff" role
+            var staffUserIds = staffRole.Users.Select(r => r.UserId).ToList();
+            // Get the actual staff users from AspNetUsers entity
+            var staffUsers = dbContext.AspNetUsers.Where(u => staffUserIds.Contains(u.Id)).ToList();
+
+            // Find the "Patient" role
+            var patientRole = roleManager.FindByName("Patient");
+            // Get the user IDs in the "Patient" role
+            var patientUserIds = patientRole.Users.Select(r => r.UserId).ToList();
+            // Get the actual patient users from AspNetUsers entity
+            var patientUsers = dbContext.AspNetUsers.Where(u => patientUserIds.Contains(u.Id)).ToList();
+
+            var model = new BulkEmailViewModel
+            {
+                Patients = patientUsers.Select(u => new UserRoleViewModel
+                {
+                    Id = u.Id,
+                    FullName = u.FullName,
+                    IsSelected = false
+                }).ToList(),
+
+                Staff = staffUsers.Select(u => new UserRoleViewModel
+                {
+                    Id = u.Id,
+                    FullName = u.FullName,
+                    IsSelected = false
+                }).ToList()
+            };
+
+            return View(model);
+        }
+
+        public async Task SendBulkEmail(List<AspNetUsers> users, string subject, string content, string attachmentFilename = null, string attachmentBase64 = null)
+        {
+            const String API_KEY = "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";
+            var client = new SendGridClient(API_KEY);
+            var from = new EmailAddress("zhuyanqi001215@gmail.com", "Admin");
+            var tos = users.Select(u => new EmailAddress(u.Email, u.FullName)).ToList();
+            var msg = MailHelper.CreateSingleEmailToMultipleRecipients(from, tos, subject, content, content);
+
+            if (!string.IsNullOrEmpty(attachmentFilename) && !string.IsNullOrEmpty(attachmentBase64))
+            {
+                msg.Attachments = new List<SendGrid.Helpers.Mail.Attachment>
+                {
+                    new SendGrid.Helpers.Mail.Attachment
+                    {
+                        Content = attachmentBase64,
+                        Filename = attachmentFilename,
+                        Type = "application/octet-stream", // generic binary (could be improved by mapping to a specific MIME type based on the file extension)
+                Disposition = "attachment"
+            }
+        };
+            }
+
+            await client.SendEmailAsync(msg);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> SendSelectedEmails(List<string> selectedUsers, string EmailSubject, string EmailContent, HttpPostedFileBase attachment)
+        {
+            var dbContext = new FIT5032_Model();
+            if (selectedUsers != null && selectedUsers.Count > 0)
+            {
+                var users = dbContext.AspNetUsers.Where(u => selectedUsers.Contains(u.Id)).ToList();
+                if (attachment != null && attachment.ContentLength > 0)
+                {
+                var filename = Path.GetFileName(attachment.FileName);
+                var fileStream = new MemoryStream();
+                attachment.InputStream.CopyTo(fileStream);
+                var fileBytes = fileStream.ToArray();
+                var fileBase64 = Convert.ToBase64String(fileBytes);
+
+                // Add this attachment to the email
+                await SendBulkEmail(users, EmailSubject, EmailContent, filename, fileBase64);
+                }
+                else
+                {
+                await SendBulkEmail(users, EmailSubject, EmailContent);
+                }
+                TempData["Message"] = "Emails have been sent successfully!";
+                return RedirectToAction("SendBulkEmails");
+            }
+            TempData["Message"] = "Failed to send emails.";
+            return RedirectToAction("SendBulkEmails");
+        }
+
+
+        #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 

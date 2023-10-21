@@ -1,0 +1,57 @@
+﻿@model FIT5032_PortfolioV3.Models.BulkEmailViewModel
+
+<div class="container mt-4">
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success mb-4">@TempData["Message"]</div>
+    }
+
+    @using (Html.BeginForm("SendSelectedEmails", "Manage", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h3 class="mb-3">Patients</h3>
+                @foreach (var user in Model.Patients)
+                {
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="selectedUsers" value="@user.Id" id="patient_@user.Id">
+                    <label class="form-check-label" for="patient_@user.Id">@user.FullName</label>
+                </div>
+                }
+            </div>
+
+            <div class="col-md-6">
+                <h3 class="mb-3">Staff</h3>
+                @foreach (var user in Model.Staff)
+                {
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="selectedUsers" value="@user.Id" id="staff_@user.Id">
+                    <label class="form-check-label" for="staff_@user.Id">@user.FullName</label>
+                </div>
+                }
+            </div>
+        </div>
+
+        <div class="form-horizontal">
+            <div class="form-group col-md-offset-2 col-md-10">
+                <label for="EmailSubject">Email Subject:</label>
+                <input class="form-control" type="text" name="EmailSubject" required />
+            </div>
+
+            <div class="form-group col-md-offset-2 col-md-10">
+                <label for="EmailContent">Email Content:</label>
+                <textarea class="form-control" name="EmailContent" rows="5" required></textarea>
+            </div>
+
+            <div class="form-group col-md-offset-2 col-md-10">
+                <p></p>
+                <label for="attachment">Attachment:</label>
+                <input class="form-control-file" type="file" name="attachment" />
+            </div>
+
+            <div class="form-group mt-3 col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-primary">Send Emails</button>
+            </div>
+        </div>
+    }
+</div>

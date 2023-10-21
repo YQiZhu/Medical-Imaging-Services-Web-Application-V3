@@ -38,6 +38,11 @@
                         <li>@Html.ActionLink("Medical Images", "Index", "MedImages", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("Reports", "Index", "Reports", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("Rate Your Appointment", "Index", "Ratings", new { area = "" }, new { @class = "nav-link" })</li>
+                        if (User.IsInRole("Admin"))
+                        {
+                            @Html.ActionLink("Send Bulk Emails", "SendBulkEmails", "Manage", new { area = "" }, new { @class = "nav-link" })
+                        }
+
                     }
                 </ul>
                 @Html.Partial("_LoginPartial")

@@ -64,8 +64,8 @@ namespace FIT5032_PortfolioV3.Controllers
         {
             var userId = User.Identity.GetUserId();
             bool hasAppointment = db.Appointments.Any(a => a.PatientUserId == userId);
-
-            if (!hasAppointment)
+            bool isAdmin = User.IsInRole("Admin");
+            if (!hasAppointment && !isAdmin)
             {
                 // If no appointment is found, redirect the user to the Index page with a warning message.
                 TempData["Message"] = "You cannot rate as you have no appointments!";
@@ -77,12 +77,19 @@ namespace FIT5032_PortfolioV3.Controllers
             // Filter appointments for the current user that have not been rated
             var unratedAppointments = db.Appointments.Where(a => a.PatientUserId == userId && !ratedAppointmentIds.Contains(a.Id)).ToList();
 
-            if (!unratedAppointments.Any())
+            if (!unratedAppointments.Any() && !isAdmin)
             {
                 TempData["Message"] = "You cannot rate as all your appointments have been rated!";
                 return RedirectToAction("Index");
             }
+            if (isAdmin)
+            {
+                ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime");
+            }
+            else
+            {
             ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId && !ratedAppointmentIds.Contains(a.Id)), "Id", "AppointmentDateTime");
+            }
             return View();
         }
 
@@ -115,8 +122,14 @@ namespace FIT5032_PortfolioV3.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
-            ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId), "Id", "AppointmentDateTime", rating.AppointmentId);
+            if (User.IsInRole("Admin"))
+            {
+                ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime");
+            }
+            else
+            {
+                ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.PatientUserId == userId), "Id", "AppointmentDateTime", rating.AppointmentId);
+            }
             return View(rating);
         }
 
