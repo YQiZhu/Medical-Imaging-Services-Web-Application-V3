@@ -1030,7 +1030,6 @@
     <Content Include="Views\MedImages\Create.cshtml" />
     <Content Include="Views\MedImages\Delete.cshtml" />
     <Content Include="Views\MedImages\Details.cshtml" />
-    <Content Include="Views\MedImages\Edit.cshtml" />
     <Content Include="Views\MedImages\Index.cshtml" />
     <Content Include="Views\Ratings\Create.cshtml" />
     <Content Include="Views\Ratings\Delete.cshtml" />

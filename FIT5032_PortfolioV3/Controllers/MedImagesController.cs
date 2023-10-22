@@ -69,7 +69,31 @@ namespace FIT5032_PortfolioV3.Controllers
         // GET: MedImages/Create
         public ActionResult Create()
         {
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime");
+            var userId = User.Identity.GetUserId();
+            bool hasAppointment = db.Appointments.Any(a => a.StaffUserId == userId);
+            bool isAdmin = User.IsInRole("Admin");
+            if (!hasAppointment && !isAdmin)
+            {
+                // If no appointment is found, redirect the user to the Index page with a warning message.
+                TempData["Message"] = "You cannot add Medcial Images as you have no appointments!";
+                return RedirectToAction("Index");
+            }
+            // Get a list of AppointmentIds that have already been rated
+            var images = db.MedImages.Select(r => r.AppointmentId).ToList();
+
+            // Filter appointments for the current user that have not been rated
+            var unupload = db.Appointments.Where(a => a.StaffUserId == userId && !images.Contains(a.Id)).ToList();
+
+            if (!unupload.Any() && !isAdmin)
+            {
+                TempData["Message"] = "You cannot add Medcial Images as all your appointments have been added!";
+                return RedirectToAction("Index");
+            }
+            if (User.IsInRole("Admin"))
+                { ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime"); }
+            else {ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.StaffUserId == userId), "Id", "AppointmentDateTime"); }
+            
+            
             return View();
         }
 
@@ -116,12 +140,13 @@ namespace FIT5032_PortfolioV3.Controllers
                     }
                 }
                 TempData["Message"] = mess;
-
-                ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime", medImage.AppointmentId);
+                var userId = User.Identity.GetUserId();
+                ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.StaffUserId == userId), "Id", "AppointmentDateTime", medImage.AppointmentId);
                 return View(medImage);
             }
         }
 
+        /*
         // GET: MedImages/Edit/5
         public ActionResult Edit(string id)
         {
@@ -134,7 +159,10 @@ namespace FIT5032_PortfolioV3.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime", medImage.AppointmentId);
+            var userId = User.Identity.GetUserId();
+            ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.StaffUserId == userId), "Id", "AppointmentDateTime", medImage.AppointmentId);
+            if (User.IsInRole("Admin"))
+            { ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime"); }
             return View(medImage);
         }
 
@@ -154,9 +182,13 @@ namespace FIT5032_PortfolioV3.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime", medImage.AppointmentId);
+            var userId = User.Identity.GetUserId();
+            ViewBag.AppointmentId = new SelectList(db.Appointments.Where(a => a.StaffUserId == userId), "Id", "AppointmentDateTime", medImage.AppointmentId);
+            if (User.IsInRole("Admin"))
+            { ViewBag.AppointmentId = new SelectList(db.Appointments, "Id", "AppointmentDateTime"); }
             return View(medImage);
         }
+        */
 
         // GET: MedImages/Delete/5
         public ActionResult Delete(string id)
