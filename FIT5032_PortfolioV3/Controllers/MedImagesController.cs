@@ -245,7 +245,7 @@ namespace FIT5032_PortfolioV3.Controllers
         [Authorize(Roles = "Admin,Patient")]
         public ActionResult SendEmail(SendEmailViewModel model)
         {
-            const String API_KEY = "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";
+            const String API_KEY = "API KEY";
             //string mes = model.ToEmail + model.Subject + model.Subject;
             if (ModelState.IsValid)
             {
