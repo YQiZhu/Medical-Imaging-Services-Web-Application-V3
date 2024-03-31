@@ -18,7 +18,7 @@ namespace FIT5032_PortfolioV3
 {
     public class EmailService : IIdentityMessageService
     {
-        private const String API_KEY = "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";
+        private const String API_KEY = "API";
 
         public async Task SendAsync(IdentityMessage message)
         {
